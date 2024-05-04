@@ -5,7 +5,7 @@
     require 'config.php';
     $con = '';
     if(BASE_URL == 'https://aai.compwallah.com/'){
-        $con = mysqli_connect("localhost","u605731505_compwallah","Internship@Compwallah1519","u605731505_internship");
+        $con = mysqli_connect("localhost","u605731505_admin1519","Pr@$@d@151956","u605731505_aai");
     }else{
         $con = mysqli_connect("localhost","root","","aai");
     }
@@ -14,3 +14,6 @@
         echo "Failed to Connect to MySQL: " . mysqli_connect_error();
     }
 ?>
+
+
+<!-- Pr@$@d@151956 -->
