@@ -147,10 +147,19 @@ if (isset($_POST["submitForm"])) {
 
     // Handle file upload
     $file_tmp = $_FILES['uploadId']['tmp_name'];
+    $file_name = $_FILES['uploadId']['name'];
+    $file_type = $_FILES['uploadId']['type'];
+
+    // Check if file is an image or PDF
+    $allowed_types = array('image/jpeg', 'image/png', 'image/jpg', 'application/pdf');
+    if (!in_array($file_type, $allowed_types)) {
+        echo "<script>alert('Error: Only images (JPEG, PNG, JPG) and PDF files are allowed.'); window.location.href = 'register.php'</script>";
+        exit;
+    }
 
     // Check if file exists and is readable
     if (!file_exists($file_tmp) || !is_readable($file_tmp)) {
-        echo "Error: Unable to read uploaded file.";
+        echo "<script>alert('Error: Unable to read uploaded file.'); window.location.href = 'register.php'</script>";
         exit;
     }
 
@@ -210,7 +219,7 @@ if(isset($_SESSION['emailVerified']) && $_SESSION['emailVerified'] == true){
             <div class="card">
             <div class="card-body">
                 <h5 class="card-title text-center mb-4">Visitor Application Form</h5>
-                <form action="#" method="POST" enctype="multipart/form-data">
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="name" class="form-label">Name of Applicant:</label>
                     <input type="text" class="form-control" id="name" name="name" required>

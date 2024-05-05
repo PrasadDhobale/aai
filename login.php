@@ -24,7 +24,7 @@ if(isset($_POST['loginBtn'])) {
         $_SESSION['visitor'] = $row;
         
         $_SESSION['isvisitorlogin'] = true;
-        header("Location: visitor/dashboard.php");
+        header("Location: visitor/index.php");
         exit;        
     } else {
         // Invalid credentials, redirect to login page with alert

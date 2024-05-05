@@ -12,9 +12,8 @@ include "Connection.php";
     
   </head>
   <body>    
-        <nav class="navbar navbar-expand-lg navbar-light navbar-sticky">
+        <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container-fluid">
-                <!-- <a class="navbar-brand text-info" href="/aai"><b><i class="fas fa-landmark"></i> AAI</b></a> -->
                 <a class="navbar-brand text-info" href="#">
                 <img src="assets/images/aai_logo.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
                 <b><i class="fas fa-landmark"></i> A A I</b>
@@ -25,13 +24,13 @@ include "Connection.php";
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav flex">
-                        <a class="nav-link active" aria-current="page" href="/aai"><b>Home</b></a>
-                        <a class="nav-link" href="/aai#features"><b>Features</b></a>
-                        <a class="nav-link" href="/aai#working"><b>How it Works?</b></a>                        
-                        <a class="nav-link" href="/aai#about"><b>About Us</b></a>
+                        <a class="nav-link active" aria-current="page" href="<?php echo BASE_URL; ?>"><b>Home</b></a>
+                        <a class="nav-link" href="<?php echo BASE_URL; ?>#features"><b>Features</b></a>
+                        <a class="nav-link" href="<?php echo BASE_URL; ?>#working"><b>How it Works?</b></a>                        
+                        <a class="nav-link" href="<?php echo BASE_URL; ?>#about"><b>About Us</b></a>
                         <a class="nav-link" href="<?php echo BASE_URL; ?>login.php"><b>Login</b></a>
-                        <a class="nav-link" href="/aai/register.php"><b>Register</b></a>
-                        <a class="nav-link" href="/aai#contact"><b>Contact</b></a>
+                        <a class="nav-link" href="<?php echo BASE_URL; ?>register.php"><b>Register</b></a>
+                        <a class="nav-link" href="<?php echo BASE_URL; ?>#contact"><b>Contact</b></a>
                     </div>
                 </div>
                 <!-- <a href="/aai#contact"><button class="btn btn-outline-success my-2 my-sm-0">Contact</button></a> -->
