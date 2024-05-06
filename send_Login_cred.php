@@ -13,11 +13,12 @@
             <br>
             <p style="font-size: 20px; text-align: left;">We are very glad to see you here..!! We hope you are fine. <br><br>
             "A place where exploration meets curiosity"<br><br>
-            Your AAI Visitor Pass Credentials are<br><br> <b>Email ID : <?php echo $email; ?><br> Password : <?php echo $password; ?></b><br><br>
-            Wish you have a nice Day..!<br><br>
+            This Button Will Expire as you Change Your Password.<br><br>
+            Click Below Button to Change Your Password.<br><br>            
+
             </p>
             <div style="text-align: center;">
-                <a href="<?php echo BASE_URL; ?>login.php"><button style="background-color:#2965ff; padding:5%; border-radius: 10px; border: 5px solid #03fcd3; font-size: 25px; cursor:pointer; font-weight:bold;padding:1%;color:white;">Login</button></a>
+                <a href="<?php echo BASE_URL; ?>ChangePassword.php?<?php echo $string; ?>"><button style="background-color:#2965ff; padding:5%; border-radius: 10px; border: 5px solid #03fcd3; font-size: 25px; cursor:pointer; font-weight:bold;padding:1%;color:white;">Change Password</button></a>
             </div>
         </div>
     </div>

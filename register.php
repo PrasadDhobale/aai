@@ -64,6 +64,7 @@ if(isset($_SESSION['emailVerified']) && $_SESSION['emailVerified'] == true){
             $_SESSION['otp'] = $otp;
             $_SESSION['email'] = $_POST['email'];
             $email = $_POST['email'];
+            // echo $otp;
 
             // send otp to entered email.
 
@@ -220,34 +221,68 @@ if(isset($_SESSION['emailVerified']) && $_SESSION['emailVerified'] == true){
             <div class="card-body">
                 <h5 class="card-title text-center mb-4">Visitor Application Form</h5>
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name of Applicant:</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
+                
+                <div class="mb-3 row">
+                    <label for="name" class="col-sm-2 col-form-label">Email</label>
+                    <div class="col-sm-7">
+                        <input type="text" value="<?php echo $_SESSION['email']; ?>" class="form-control" id="name" name="name" required readonly>
+                    </div>
+                    <div class="col-sm-3">
+                        <?php
+                        if(isset($_POST['changeEmail'])){
+                            $_SESSION['emailVerified'] = false;
+                            header('Location: register.php');
+                        }
+                        ?>
+                        <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" class="form">
+                            <button type="submit" name="changeEmail" class="btn btn-sm btn-outline-danger"><b>Change Email</b></button>
+                        </form>
+                    </div>
                     <input type="hidden" class="form-control" value="<?php echo $visitor_id; ?>" id="visitor_id" name="visitor_id" required>
                 </div>
-                <div class="mb-3">
-                    <label for="sdw" class="form-label">S/D/W of Name:</label>
-                    <input type="text" class="form-control" id="sdw" name="sdw" required>
+
+                <div class="mb-3 row">
+                    <label for="name" class="col-sm-2 col-form-label">Full Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" placeholder="John Smith" class="form-control" id="name" name="name" required>
+                    </div>
+                    <input type="hidden" class="form-control" value="<?php echo $visitor_id; ?>" id="visitor_id" name="visitor_id" required>
                 </div>
-                <div class="mb-3">
-                    <label for="designation" class="form-label">Designation of Applicant:</label>
-                    <input type="text" class="form-control" id="designation" name="designation" required>
+                <div class="mb-3 row">
+                    <label for="sdw" class="col-sm-2 col-form-label">S/D/W Of</label>
+                    <div class="col-sm-10">
+                        <input type="text" placeholder="Steve Smith" class="form-control" id="sdw" name="sdw" required>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Mob/Telephone no:</label>
-                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                <div class="mb-3 row">
+                    <label for="designation" class="col-sm-2 col-form-label">Designation</label>
+                    <div class="col-sm-10">
+                        <input type="text" placeholder="Employee" class="form-control" id="designation" name="designation" required>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="address" class="form-label">Address:</label>
-                    <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                <div class="mb-3 row">
+                    <label for="phone" class="col-sm-2 col-form-label">Phone</label>
+                    <div class="col-sm-10">
+                        <input type="tel" placeholder="+91 9078234323" class="form-control" id="phone" name="phone" required>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="companyID" class="form-label">Company ID:</label>
-                    <input type="text" class="form-control" id="companyID" name="companyID">
+                <div class="mb-3 row">
+                    <label for="address" class="col-sm-2 col-form-label">Address</label>
+                    <div class="col-sm-10">
+                        <textarea placeholder="enter your address" class="form-control" id="address" name="address" rows="2" required></textarea>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="identity" class="form-label">Identity:</label>
-                    <select class="form-select" id="identity" name="identity" required>
+                <div class="mb-3 row">
+                    <label for="companyID" class="col-sm-2 col-form-label">Company ID</label>
+                    <div class="col-sm-10">
+                        <input type="text" placeholder="enter company id" class="form-control" id="companyID" name="companyID">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="identity" class="col-sm-2 col-form-label">Identity</label>
+                    <div class="col-sm-10">
+                        <select class="form-select" id="identity" name="identity" required>
+                    </div>
                     <option value="Aadhaar Card">Aadhaar Card</option>
                     <option value="Pan Card">Pan Card</option>
                     <option value="Driving License">Driving License</option>
@@ -255,9 +290,11 @@ if(isset($_SESSION['emailVerified']) && $_SESSION['emailVerified'] == true){
                     <option value="Passport">Passport</option>
                     </select>
                 </div>               
-                <div class="mb-3">
-                    <label for="uploadId" class="form-label">Upload Id:</label>
-                    <input type="file" class="form-control" id="uploadId" name="uploadId" accept="image/*,.pdf" required>
+                <div class="mb-3 row mt-3">
+                    <label for="uploadId" class="col-sm-2 col-form-label">Upload Id</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control" id="uploadId" name="uploadId" accept="image/*,.pdf" required>
+                    </div>
                 </div>
                 <button type="submit" name="submitForm" class="btn btn-primary w-100">Submit</button>
                 </form>

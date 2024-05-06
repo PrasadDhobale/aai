@@ -14,6 +14,3 @@
         echo "Failed to Connect to MySQL: " . mysqli_connect_error();
     }
 ?>
-
-
-<!-- Pr@$@d@151956 -->
