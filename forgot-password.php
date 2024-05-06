@@ -1,7 +1,17 @@
 <?php
 
 session_start();
-require_once "connection.php";
+require_once "Connection.php";
+
+// Function to encrypt data
+function encryptData($data, $key) {
+    $cipher = "aes-256-cbc"; // Using AES encryption with CBC mode
+    $iv = "1234567890123456"; // Fixed IV (Initialization Vector)
+    $encryptedData = openssl_encrypt($data, $cipher, $key, OPENSSL_RAW_DATA, $iv); // Encrypt the data
+    $encryptedData = base64_encode($encryptedData); // Encode in base64
+    return $encryptedData;
+}
+
 
 // Check if the request is a POST request
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -11,10 +21,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Invalid email address.";
         exit;
     }
-
     
     try {
-        $sql = "SELECT id, email, password, name FROM visitor_data WHERE email = ?";
+        $sql = "SELECT id, email, password FROM visitor_data WHERE email = ?";
         $stmt = $con->prepare($sql);
         $stmt->execute([$email]);
         $result = $stmt->get_result();
@@ -29,8 +38,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
         $id = $user['id'];
         $email = $user['email'];
-        // The user is verified, you can send the password here
-        $password = $user['password']; // Accessing the password
+        $password = $user['password'];
+
+        $secretKey = "aaisecretkey";
+
+        // Encrypt data
+        $encryptedId = urlencode(encryptData($id, $secretKey));
+        $encryptedEmail = urlencode(encryptData($email, $secretKey));
+        $encryptedPassword = urlencode(encryptData($password, $secretKey));
+
+        // Construct the string
+        $string = "id=$encryptedId&&email=$encryptedEmail&&password=$encryptedPassword";
+
         
         $role = "password";
         ob_start();
@@ -38,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $subject = "AAI Visitor Pass [Login Credentials]";
         $body = ob_get_clean();
         require 'sendEmail.php';
-        exit;        
+        exit;    
     } catch (PDOException $e) {
         echo "Database Error: " . $e->getMessage();
         exit;
