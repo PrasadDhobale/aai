@@ -170,7 +170,7 @@ if ($decryptedParameters !== null) {
             echo "<script>alert('Invalid Credentials for Visitor.'); window.location.href='index.php';</script>";            
         }   
     } else {
-        // echo "<script>alert('Credentials are incorrect.'); window.location.href='login.php';</script>";
+        echo "<script>alert('Credentials are incorrect.'); window.location.href='login.php';</script>";
     }
 } else {
     // Handle case where required parameter is missing

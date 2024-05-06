@@ -37,7 +37,7 @@ if(!$_SESSION['isvisitorlogin']){
                         </button>
                         <ul class="dropdown-menu" id="profileDropdownMenu" aria-labelledby="profileDropdownMenuButton">
                             <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#visitorProfileModal">Profile</a></li>
-                            <li><a class="dropdown-item text-warning" href="#" data-bs-toggle="modal" data-bs-target="#ChangePasswordModal">Change Password</a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#ChangePasswordModal">Change Password</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="<?php echo BASE_URL; ?>visitor/logout.php">Logout</a></li>
                         </ul>
