@@ -15,36 +15,40 @@ if(!$_SESSION['isvisitorlogin']){
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         
     </head>
-    <body>    
-        <nav class="navbar navbar-expand-lg navbar-primary navbar-sticky">
-            <div class="container-fluid">
-                <a class="navbar-brand text-primary" href="<?php echo BASE_URL; ?>/visitor">
-                    <b><i class="fas fa-landmark"></i>Dashboard</b>
+    <body>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand fw-bold" href="<?php echo BASE_URL; ?>/visitor"><?php echo $_SESSION['visitor']['name']; ?></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="<?php echo BASE_URL; ?>/visitor">Dashboard</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="<?php echo BASE_URL; ?>visitor/pass.php">Request Pass</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="<?php echo BASE_URL; ?>visitor/history.php">History</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Profile
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-                    aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav flex">
-                        <a class="nav-link" href="<?php echo BASE_URL; ?>visitor/pass.php"><b>Request Pass</b></a>
-                        <a class="nav-link" href="<?php echo BASE_URL; ?>visitor/history.php"><b>History</b></a>
-                    </div>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="profileDropdownMenuButton" data-bs-toggle="dropdown"
-                            aria-expanded="false" onmouseover="openProfileDropdown()">
-                            Profile
-                        </button>
-                        <ul class="dropdown-menu" id="profileDropdownMenu" aria-labelledby="profileDropdownMenuButton">
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#visitorProfileModal">Profile</a></li>
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#ChangePasswordModal">Change Password</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="<?php echo BASE_URL; ?>visitor/logout.php">Logout</a></li>
-                        </ul>
-                    </div>
-                </div>            
-            </div>
-        </nav>    
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#visitorProfileModal">Profile</a></li>
+                  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#ChangePasswordModal">Change Password</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item text-danger" href="<?php echo BASE_URL; ?>visitor/logout.php">Logout</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
 
         <!-- Visitor Profile Modal -->
         <div class="modal fade" id="visitorProfileModal" tabindex="-1" aria-labelledby="visitorProfileModalLabel" aria-hidden="true">
