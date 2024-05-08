@@ -64,7 +64,7 @@ if(isset($_SESSION['emailVerified']) && $_SESSION['emailVerified'] == true){
             $_SESSION['otp'] = $otp;
             $_SESSION['email'] = $_POST['email'];
             $email = $_POST['email'];
-            // echo $otp;
+            echo $otp;
 
             // send otp to entered email.
 
@@ -73,7 +73,7 @@ if(isset($_SESSION['emailVerified']) && $_SESSION['emailVerified'] == true){
             require 'verifyemailcontent.php';
             $subject = "AAI Visitor Pass [Email Verification]";
             $body = ob_get_clean();
-            require 'sendEmail.php';
+            // require 'sendEmail.php';
 
             ?>
             <div class="container mt-5">
@@ -220,8 +220,6 @@ if(isset($_SESSION['emailVerified']) && $_SESSION['emailVerified'] == true){
             <div class="card">
             <div class="card-body">
                 <h5 class="card-title text-center mb-4">Visitor Application Form</h5>
-                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" enctype="multipart/form-data">
-                
                 <div class="mb-3 row">
                     <label for="name" class="col-sm-2 col-form-label">Email</label>
                     <div class="col-sm-7">
@@ -240,7 +238,7 @@ if(isset($_SESSION['emailVerified']) && $_SESSION['emailVerified'] == true){
                     </div>
                     <input type="hidden" class="form-control" value="<?php echo $visitor_id; ?>" id="visitor_id" name="visitor_id" required>
                 </div>
-
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" enctype="multipart/form-data">
                 <div class="mb-3 row">
                     <label for="name" class="col-sm-2 col-form-label">Full Name</label>
                     <div class="col-sm-10">
