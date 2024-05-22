@@ -124,13 +124,13 @@
                     <label for="toTimestamp" class="col-sm-4 form-label"><b>To</b></label>
                     <div class="col-sm-6">
                         <input type="datetime-local" class="form-control" id="toTimestamp" name="toTimestamp" required>
-                    </div>    
+                    </div>
                 </div>
             </div>
             <div class="row">
                 <?php
                 // Query to fetch departments from the database
-                $sql = "SELECT department_id, department_name FROM departments where department_id NOT IN(1004, 1005)";
+                $sql = "SELECT department_id, department_name FROM departments where department_id NOT IN(1000, 1001, 1002, 1003)";
                 $result = $con->query($sql);
 
                 // Check if there are any departments in the database
