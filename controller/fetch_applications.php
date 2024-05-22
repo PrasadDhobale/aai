@@ -106,19 +106,26 @@ if ($result->num_rows > 0) {
                         // Associate Area Name with ID
                         echo "<td>";
                         $areaOfVisitArray = explode(",", $row["areaOfVisit"]);
-                        for ($i = 0; $i < count($areaOfVisitArray); $i++) {
-                            $areaId = $areaOfVisitArray[$i];
-                            $getAreaQuery = "SELECT area_name FROM Areas WHERE area_id = $areaId";
+
+                        if (!empty($areaOfVisitArray)) {
+                            $areaIds = implode(",", array_map('intval', $areaOfVisitArray)); // Sanitize input for safety
+                            $getAreaQuery = "SELECT area_name FROM Areas WHERE area_id IN ($areaIds)";
                             $Areas = mysqli_query($con, $getAreaQuery);
+
                             if ($Areas && $Areas->num_rows > 0) {
-                                $area = $Areas->fetch_assoc();
-                                echo $area["area_name"];
-                                if ($i < count($areaOfVisitArray) - 1) {
-                                    echo ", ";
+                                $areaNames = [];
+                                while ($area = $Areas->fetch_assoc()) {
+                                    $areaNames[] = $area["area_name"];
                                 }
+                                echo implode(", ", $areaNames);
+                            } else {
+                                echo "No areas found";
                             }
+                        } else {
+                            echo "No areas specified";
                         }
                         echo "</td>";
+
 
                         echo "<td>" . $row["apply_time"] . "</td>";
                         if($role == 'print'){
