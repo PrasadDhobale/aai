@@ -130,7 +130,7 @@
             <div class="row">
                 <?php
                 // Query to fetch departments from the database
-                $sql = "SELECT department_id, department_name FROM departments where department_id NOT IN(1000, 1001, 1002, 1003)";
+                $sql = "SELECT department_id, department_name FROM departments where department_id NOT IN(0, 1000, 1001, 1002, 1003)";
                 $result = $con->query($sql);
 
                 // Check if there are any departments in the database
