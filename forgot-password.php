@@ -23,22 +23,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     
     try {
-        $sql = "SELECT id, email, password FROM visitor_data WHERE email = ?";
+        $sql = '';
+        $role = $_POST['role'];
+        
+        if($role == 'manager')
+            $sql = "SELECT manager_id, email, password FROM managers WHERE email = ?";
+        else if($role == 'contractor')
+            $sql = "SELECT contractor_id, email, password FROM contractors WHERE email = ?";
+
         $stmt = $con->prepare($sql);
-        $stmt->execute([$email]);
+        $stmt->bind_param('s', $email); // Bind the parameter
+        $stmt->execute();
+        
         $result = $stmt->get_result();
 
-        $user = $result->fetch_assoc();
-
+        $user = $result->fetch_array(MYSQLI_NUM);
     
         if (!$user) {
             echo "Email address not found.";
             exit;
         }
     
-        $id = $user['id'];
-        $email = $user['email'];
-        $password = $user['password'];
+        $id = $user[0];
+        $email = $user[1];
+        $password = $user[2];
 
         $secretKey = "aaisecretkey";
 
@@ -48,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $encryptedPassword = urlencode(encryptData($password, $secretKey));
 
         // Construct the string
-        $string = "id=$encryptedId&&email=$encryptedEmail&&password=$encryptedPassword";
+        $string = "role=$role&&id=$encryptedId&&email=$encryptedEmail&&password=$encryptedPassword";
 
         
         $role = "password";
@@ -62,9 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Database Error: " . $e->getMessage();
         exit;
     }
-    
-
-
 } else {
     echo "Invalid request method.";
 }

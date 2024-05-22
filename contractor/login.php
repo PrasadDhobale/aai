@@ -1,8 +1,8 @@
 <?php
 session_start();
-include('navbar.php');
+include('../navbar.php');
 
-// Check if email and visitor token are set
+// Check if email and manager token are set
 if(isset($_POST['loginBtn'])) {
     
     // Sanitize user inputs
@@ -10,33 +10,33 @@ if(isset($_POST['loginBtn'])) {
     $password = $con->real_escape_string($_POST['password']);
 
     // Prepare the SQL query using prepared statement
-    $check_visitor_query = "SELECT * FROM visitor_data WHERE email = ? AND password = ?";
-    $stmt = $con->prepare($check_visitor_query);
+    $CheckContractorQuery = "SELECT * FROM contractors WHERE email = ? AND password = ?";
+    $stmt = $con->prepare($CheckContractorQuery);
     $stmt->bind_param("ss", $email, $password);
     $stmt->execute();
     $result = $stmt->get_result();
 
     // Fetch the row
-    $row = $result->fetch_assoc();
+    $contractor = $result->fetch_assoc();
 
-    if($row) {
-        
-        $_SESSION['visitor'] = $row;
-        
-        $_SESSION['isvisitorlogin'] = true;
-        header("Location: visitor/index.php");
-        exit;        
+    if($contractor) {
+        $_SESSION['contractor'] = $contractor;
+        $_SESSION['isContractorLogin'] = true;
+        $_SESSION['role'] = "contractor";
+        $_SESSION['roleId'] = $contractor['contract_id'];
+        header("Location: index.php");
+        exit;
     } else {
         // Invalid credentials, redirect to login page with alert
-        echo "<script>alert('Invalid Credentials for Visitor.'); window.location.href='index.php';</script>";            
+        echo '<div class="alert alert-danger alert-dismissible fade show mt-3 mx-auto w-75">Invalid username or password. Please try again. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
     }    
 }
 ?>
 
 <div class="container mt-5">
     <div class="shadow p-4 m-4 pb-4 mt-5">
-        <h2>Visitor Login</h2>
-        <form id="visitor_login" method="POST" class="form p-4" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return checkCaptcha();">
+        <h2>Contractor Login</h2>
+        <form id="contractor_login" method="POST" class="form p-4" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return checkCaptcha();">
             <div class="mb-3">
                 <label for="email"><b>Email</b></label>
                 <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email Here" required>
@@ -123,9 +123,9 @@ if(isset($_POST['loginBtn'])) {
 
     // Perform AJAX request to send the reset link
     $.ajax({
-        url: 'forgot-password.php',
+        url: '../forgot-password.php',
         type: 'POST',
-        data: { email: email },
+        data: { email: email, role: 'contractor' },
         success: function(response) {
             response = response.replace(/<script>alert\(\'/g, "");
             response = response.replace(/\'\)<\/script>/g, "");
