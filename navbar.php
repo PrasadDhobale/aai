@@ -8,14 +8,14 @@ include "Connection.php";
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Visitor Entry Pass System - Airport Authority of India</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   </head>
-  <body>    
+  <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand text-primary" href="#">
-            <img src="assets/images/aai_logo.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+            <img src="<?php echo BASE_URL; ?>assets/images/aai_logo.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
             <b><i class="fas fa-landmark"></i> A A I</b>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,26 +24,24 @@ include "Connection.php";
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-dark">
                     <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="<?php echo BASE_URL; ?>">Home</a>
+                        <a class="nav-link active" aria-current="page" href="<?php echo BASE_URL; ?>">Home</a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link" href="<?php echo BASE_URL; ?>#working">How it Works?</a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link" href="<?php echo BASE_URL; ?>#about">About Us</a>
+                        <a class="nav-link" href="<?php echo BASE_URL; ?>track">Track Application</a>
                     </li>
                     <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Login
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>login.php">Visitor</a></li>
-                        <li><a class="dropdown-item" href="#">Department</a></li>
-                        <li><a class="dropdown-item" href="#">Security Incharge</a></li>
+                        <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>contractor/login.php">Contractor</a></li>
+                        <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>manager/login.php">Department</a></li>
+                        <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>manager/login.php?si=1">Security Incharge</a></li>
+                        <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>admin/login.php">Admin Login</a></li>
                     </ul>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link" href="<?php echo BASE_URL; ?>register.php">Register</a>
+                        <a class="nav-link" href="<?php echo BASE_URL; ?>visitor">Apply</a>
                     </li>
                 </ul>
             </div>

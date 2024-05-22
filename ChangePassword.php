@@ -16,12 +16,14 @@ function decryptGETParameters($key) {
         // Retrieve the encrypted data from the GET request
 
         // Extract id, email, and password
+        $role = $_GET['role'];
         $id = decryptData($_GET['id'], $key);
         $email = decryptData($_GET['email'], $key);
         $password = decryptData($_GET['password'], $key);
 
         // Return an associative array containing id, email, and password
         return array(
+            'role' => $role,
             'id' => $id,
             'email' => $email,
             'password' => $password
@@ -33,15 +35,19 @@ function decryptGETParameters($key) {
 }
 
 // Function to verify credentials
-function verifyCredentials($con, $id, $email, $password) {
-    // Prepare the SQL statement to retrieve the email and password for the given ID
-    $sql = "SELECT email, password FROM visitor_data WHERE id = ?";
+function verifyCredentials($con, $role, $id, $email, $password) {
+    
+    $sql = '';
+    if($role == 'manager')
+        $sql = "SELECT email, password FROM managers WHERE manager_id = ?";
+    else if($role == 'contractor')
+        $sql = "SELECT email, password FROM contractors WHERE contractor_id = ?";
 
     // Prepare the SQL statement
     $stmt = $con->prepare($sql);
 
     // Bind parameters
-    $stmt->bind_param("s", $id);
+    $stmt->bind_param("i", $id);
 
     // Execute the statement
     $stmt->execute();
@@ -74,20 +80,25 @@ if ($decryptedParameters !== null) {
 
     include('navbar.php');
 
-    // Assuming $con is your database connection object
+    $role = $decryptedParameters['role'];
     $id = $decryptedParameters['id'];
     $email = $decryptedParameters['email'];
     $password = $decryptedParameters['password'];
 
     // Verify credentials
     
-    $credentialsCorrect = verifyCredentials($con, $id, $email, $password);
+    $credentialsCorrect = verifyCredentials($con, $role, $id, $email, $password);
 
     if ($credentialsCorrect) {        
         
         // Prepare the SQL query using prepared statement
-        $check_visitor_query = "SELECT * FROM visitor_data WHERE id = ?";
-        $stmt = $con->prepare($check_visitor_query);
+        $CheckUserQuery = '';
+        if($role == 'manager')
+            $CheckUserQuery = "SELECT * FROM managers WHERE manager_id = ?";
+        else if($role == 'contractor')
+            $CheckUserQuery = "SELECT * FROM contractors WHERE contractor_id = ?";
+        
+        $stmt = $con->prepare($CheckUserQuery);
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -97,9 +108,33 @@ if ($decryptedParameters !== null) {
 
         if($row) {
             
-            $_SESSION['visitor'] = $row;
-            
-            $_SESSION['isvisitorlogin'] = true;
+            if($role == 'manager'){
+                
+                $_SESSION['manager'] = $row;
+                $_SESSION['isManagerLogin'] = true;
+                
+                if($row['dept_id'] == 1000 || $row['dept_id'] == 1001)
+                    $_SESSION['role'] = "incharge";
+                else if($row['dept_id'] == 1002)
+                    $_SESSION['role'] = "print";
+                else if($row['dept_id'] == 1003)
+                    $_SESSION['role'] = "clerk";
+                else
+                    $_SESSION['role'] = "manager";
+                
+                $_SESSION['roleId'] = $row['manager_id'];
+                $forgotPasswordUrl = 'manager/change_password.php';
+            }
+            else if($role == 'contractor'){
+                
+                $_SESSION['contractor'] = $row;
+                $_SESSION['isContractorLogin'] = true;
+                $_SESSION['role'] = "contractor";
+                $_SESSION['roleId'] = $row['contract_id'];
+                $forgotPasswordUrl = 'contractor/change_password.php';
+                
+            }
+
             ?>
             <div class="container mt-5">
                 <div class="row justify-content-center">
@@ -143,7 +178,7 @@ if ($decryptedParameters !== null) {
 
                     // Perform AJAX request to change the password
                     $.ajax({
-                        url: 'visitor/change_password.php',
+                        url: "<?php echo $forgotPasswordUrl; ?>",
                         type: 'POST',
                         data: {
                             currentPassword: currentPassword,
@@ -155,7 +190,7 @@ if ($decryptedParameters !== null) {
 
                             // Display success message
                             alert(response);
-                            window.location.href="visitor/";
+                            window.location.href= "<?php echo $role == 'manager' ? 'manager' : 'contractor'; ?>";
                         },
                         error: function(xhr, status, error) {
                             console.error(xhr.responseText); // Log the error
@@ -167,13 +202,13 @@ if ($decryptedParameters !== null) {
             <?php
         } else {
             // Invalid credentials, redirect to login page with alert
-            echo "<script>alert('Invalid Credentials for Visitor.'); window.location.href='index.php';</script>";            
+            echo "<script>alert('Invalid Credentials for manager.'); window.location.href='index.php';</script>";            
         }   
     } else {
-        echo "<script>alert('Credentials are incorrect.'); window.location.href='login.php';</script>";
+        echo "<script>alert('Credentials are incorrect.'); window.location.href='index.php';</script>";
     }
 } else {
     // Handle case where required parameter is missing
-    echo "<script>alert('Error: Missing or invalid parameter.'); window.location.href='login.php';</script>";
+    echo "<script>alert('Error: Missing or invalid parameter.'); window.location.href='index.php';</script>";
 }
 ?>
