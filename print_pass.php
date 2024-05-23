@@ -25,7 +25,7 @@ if(isset($incharge['incharge_id'])){
         $areaNames = [];
         $areaOfVisitArray = explode(",", $row["areaOfVisit"]);
         foreach ($areaOfVisitArray as $areaId) {
-            $getAreaQuery = "SELECT area_code FROM Areas WHERE area_id = $areaId";
+            $getAreaQuery = "SELECT area_code FROM areas WHERE area_id = $areaId";
             $area = $con->query($getAreaQuery)->fetch_assoc();
             $areaCodes[] = $area["area_code"];
         }
