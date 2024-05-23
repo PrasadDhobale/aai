@@ -7,15 +7,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $role = $_POST['role'];
     $userId = $_POST['userId'];
 
+    
+    date_default_timezone_set("Asia/Kolkata");
+    $rejection_time = date('Y-m-d H:i:s'); 
+
     // Ensure the application ID and reject reason are provided
     if (!empty($applicationId) && !empty($rejectReason)) {
         
-        date_default_timezone_set("Asia/Kolkata");
-        $rejection_time = date('Y-m-d H:i:s'); 
-
-        $sql = "UPDATE approval_level SET reason = ?, rejected_by_role = ?, rejected_by_id = ? WHERE application_id = ?";
+        $sql = "UPDATE approval_level SET reason = ?, rejected_by_role = ?, rejected_by_id = ?, rejected_at = ? WHERE application_id = ?";
         $stmt = $con->prepare($sql);
-        $stmt->bind_param("ssii", $rejectReason, $role, $userId, $applicationId);
+        $stmt->bind_param("ssisi", $rejectReason, $role, $rejection_time, $userId, $applicationId);
 
         $response = [];
         if ($stmt->execute()) {
