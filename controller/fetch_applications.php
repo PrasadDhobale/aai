@@ -109,7 +109,7 @@ if ($result->num_rows > 0) {
 
                         if (!empty($areaOfVisitArray)) {
                             $areaIds = implode(",", array_map('intval', $areaOfVisitArray)); // Sanitize input for safety
-                            $getAreaQuery = "SELECT area_name FROM Areas WHERE area_id IN ($areaIds)";
+                            $getAreaQuery = "SELECT area_name FROM areas WHERE area_id IN ($areaIds)";
                             $Areas = mysqli_query($con, $getAreaQuery);
 
                             if ($Areas && $Areas->num_rows > 0) {
