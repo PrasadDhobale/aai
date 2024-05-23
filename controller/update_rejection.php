@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         $sql = "UPDATE approval_level SET reason = ?, rejected_by_role = ?, rejected_by_id = ?, rejected_at = ? WHERE application_id = ?";
         $stmt = $con->prepare($sql);
-        $stmt->bind_param("ssisi", $rejectReason, $role, $rejection_time, $userId, $applicationId);
+        $stmt->bind_param("ssisi", $rejectReason, $role, $userId, $rejection_time, $applicationId);
 
         $response = [];
         if ($stmt->execute()) {
