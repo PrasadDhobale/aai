@@ -41,10 +41,16 @@ if(isset($incharge['incharge_id'])){
             <meta charset="UTF-8">
             <title>Pass</title>
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+            <style type="text/css" media="print">
+            @page {
+                size: auto;   /* auto is the initial value */
+                margin: 0;  /* this affects the margin in the printer settings */
+            }
+            </style>
         </head>
         <body>
         <div class="p-4">
-            <h2 class="p-4 text-center">Airport Authority Of India</h2>
+            <h1 class="p-4 text-center">Airport Authority Of India</h1>
 
             <div class="row">
                 <div class="col-sm-8">
