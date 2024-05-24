@@ -123,7 +123,7 @@ if ($decryptedParameters !== null) {
                     $_SESSION['role'] = "manager";
                 
                 $_SESSION['roleId'] = $row['manager_id'];
-                $forgotPasswordUrl = 'manager/change_password.php';
+                $forgotPasswordUrl = 'department/change_password.php';
             }
             else if($role == 'contractor'){
                 
