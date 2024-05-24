@@ -36,6 +36,7 @@ include "Connection.php";
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>contractor/login.php">Contractor</a></li>
                         <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>department/login.php">Department Manager</a></li>
+                        <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>department/login.php?dept=c">Clerk</a></li>
                         <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>department/login.php?dept=si">CSO / Termial</a></li>
                         <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>department/login.php?dept=ps">Print Section</a></li>
                         <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>admin/login.php">Admin Login</a></li>
