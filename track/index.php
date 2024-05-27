@@ -4,25 +4,22 @@
 require('../navbar.php');
 // Fetch the application_id from the URL
 
-if(isset($_GET['id'])){
-    $application_id = $_GET['id'];
-    $checkPassStatusQuery = "select * from approval_level where application_id = $application_id";
+if(isset($_GET['phone'])){
+    $phone = $_GET['phone'];
+    $checkPassStatusQuery = "select * from approval_level where application_id = (select application_id from pass_applications where phone = $phone)";
     $application = $con->query($checkPassStatusQuery)->fetch_assoc();
     if(isset($application['application_id'])){
 
-        $checkApplyTime = "select apply_time from pass_applications where application_id = $application_id";
-        $applyTime = $con->query($checkApplyTime)->fetch_assoc();
+        $checkApplyTime = "select apply_time, contract_id, other_contract from pass_applications where application_id = (select application_id from pass_applications where phone = $phone)";
+        $pass = $con->query($checkApplyTime)->fetch_assoc();
         
-        $userApplyTime = $applyTime['apply_time'];
-        $contractorApproveTime = $application['contractor_approve_time'];
+        $userApplyTime = $pass['apply_time'];
+        
         $managerApproveTime = $application['manager_approve_time'];
-        $clerkApproveTime = $application['clerk_approve_time'];
-        $csoApproveTime = $application['incharge_approve_time'];
-
-        $contractorApproved = isset($contractorApproveTime);
+        $siApproveTime = $application['incharge_approve_time'];
+       
         $managerApproved = isset($managerApproveTime);
-        $clerkApproved = isset($clerkApproveTime);
-        $csoApproved = isset($csoApproveTime);
+        $siApproved = isset($siApproveTime);
 
         // Function to calculate time difference in hours and minutes
         function timeDifference($start, $end) {
@@ -35,12 +32,22 @@ if(isset($_GET['id'])){
             
             return "{$hours}h {$minutes}m";
         }
+        
+        $contractorApproveTime = $contractorApproved = '';
+        $userToContractor = '';
+        $userToManager = '';
+        $contractorToManager = '';
 
-        $userToContractor = isset($userApplyTime) && isset($contractorApproveTime) ? timeDifference($userApplyTime, $contractorApproveTime) : '00';
-        $contractorToManager = isset($contractorApproveTime) && isset($managerApproveTime) ? timeDifference($contractorApproveTime, $managerApproveTime) : '00';
-        $managerToClerk = isset($managerApproveTime) && isset($clerkApproveTime) ? timeDifference($managerApproveTime, $clerkApproveTime) : '00';
-        $clerkToCso = isset($clerkApproveTime) && isset($csoApproveTime) ? timeDifference($clerkApproveTime, $csoApproveTime) : '00';
-
+        if($pass['contract_id'] != 0){
+            $contractorApproveTime = $application['contractor_approve_time'];
+            $contractorApproved = isset($contractorApproveTime);            
+            $userToContractor = isset($userApplyTime) && isset($contractorApproveTime) ? timeDifference($userApplyTime, $contractorApproveTime) : '00';
+            $contractorToManager = isset($contractorApproveTime) && isset($managerApproveTime) ? timeDifference($contractorApproveTime, $managerApproveTime) : '00';
+        }else{
+            $userToManager = isset($userApplyTime) && isset($managerApproveTime) ? timeDifference($userApplyTime, $managerApproveTime) : '00';
+        }
+        $managerToSi = isset($managerApproveTime) && isset($siApproveTime) ? timeDifference($managerApproveTime, $siApproveTime) : '00';
+        
         ?>
             <style>
                 .timeline {
@@ -152,6 +159,9 @@ if(isset($_GET['id'])){
                                 </tr>
                             </table>
                         </div>
+                        <div class="text-center">
+                            <button class="btn btn-danger" id="blink">Re-Apply Now</button>
+                        </div>
                     </div>
                     <?php
                 }
@@ -163,37 +173,46 @@ if(isset($_GET['id'])){
                         <div class="icon text-primary"><i class="fas fa-user-tie"></i></div>
                         <p>User</p>
                     </div>
-                    <div class="timeline-step <?php echo $contractorApproved ? 'approved' : 'not-approved'; ?>">
-                        <p class="time"><?php echo $contractorApproveTime; ?></p>
-                        <p><?php echo $userToContractor; ?></p>
-                        <div class="icon text-primary"><i class="fas fa-user-tie"></i></div>
-                        <p>Contractor</p>
-                    </div>
+                    
+                    <?php
+                    if($pass['contract_id'] != 0){
+                        ?>
+                        <div class="timeline-step <?php echo $contractorApproved ? 'approved' : 'not-approved'; ?>">
+                            <p class="time"><?php echo $contractorApproveTime; ?></p>
+                            <p><?php echo $userToContractor; ?></p>
+                            <div class="icon text-primary"><i class="fas fa-user-tie"></i></div>
+                            <p>Contractor</p>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                    
                     <div class="timeline-step <?php echo $managerApproved ? 'approved' : 'not-approved'; ?>">
                         <p class="time"><?php echo $managerApproveTime; ?></p>
-                        <p><?php echo $contractorToManager; ?></p>
+                        <p><?php echo $pass['contract_id'] != 0 ? $contractorToManager : $userToManager; ?></p>
                         <div class="icon text-primary"><i class="fas fa-briefcase"></i></div>
                         <p>Dept Manager</p>
                     </div>
-                    <div class="timeline-step <?php echo $clerkApproved ? 'approved' : 'not-approved'; ?>">
-                        <p class="time"><?php echo $clerkApproveTime; ?></p>
-                        <p><?php echo $managerToClerk; ?></p>
+                    <div class="timeline-step <?php echo $siApproved ? 'approved' : 'not-approved'; ?>">
+                        <p class="time"><?php echo $siApproveTime; ?></p>
+                        <p><?php echo $managerToSi; ?></p>
                         <div class="icon text-primary"><i class="fas fa-user-cog"></i></div>
-                        <p>Clerk</p>
-                    </div>
-                    <div class="timeline-step <?php echo $csoApproved ? 'approved' : 'not-approved'; ?>">
-                        <p class="time"><?php echo $csoApproveTime; ?></p>
-                        <p><?php echo $clerkToCso; ?></p>
-                        <div class="icon text-primary"><i class="fas fa-user-shield"></i></div>
-                        <p>CSO / Terminal</p>
-                    </div>
-                    <div class="timeline-step <?php echo $csoApproved ? 'approved' : 'not-approved'; ?>"></div>
+                        <p>CSO / Terminal / APD</p>
+                    </div>                    
+                    <div class="timeline-step <?php echo $siApproved ? 'approved' : 'not-approved'; ?>"></div>
                 </div>
             </div>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>            
+            <script type="text/javascript"> 
+            var blink = document.getElementById('blink'); 
+    
+            setInterval(function () { 
+                blink.style.opacity = (blink.style.opacity == 0 ? 1 : 0); 
+            }, 1000); 
+        </script> 
     <?php 
     }else{
-        echo "Application ID Not Found";
+        echo "Phone Number Not Found";
     }
 }else{
     ?>
@@ -201,9 +220,9 @@ if(isset($_GET['id'])){
         <form class="row row-cols-lg-auto g-3 align-items-center" action="" method="get" target="__blank">
             <div class="col-12">
                 <div class="input-group">
-                    <input type="number" class="form-control" name="id" id="applicationId" placeholder="Application ID">
-                </div>            
-            </div>    
+                    <input type="number" class="form-control" name="phone" id="phone" placeholder="Phone Number">
+                </div>
+            </div>
             <div class="col-12">
                 <button type="submit" class="btn btn-primary">Check Status</button>
             </div>

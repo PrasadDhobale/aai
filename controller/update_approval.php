@@ -43,8 +43,6 @@ function updateApprovalStatus($con, $applicationId, $role, $userId) {
         $update_query = "UPDATE approval_level SET contractor_id = '$userId', contractor_approve_time =  '$approval_time' WHERE application_id = $applicationId";
     if($role == 'manager')
         $update_query = "UPDATE approval_level SET manager_id = '$userId', manager_approve_time =  '$approval_time' WHERE application_id = $applicationId";
-    if($role == 'clerk')
-        $update_query = "UPDATE approval_level SET clerk_id = '$userId', clerk_approve_time =  '$approval_time' WHERE application_id = $applicationId";
     if($role == 'incharge')
         $update_query = "UPDATE approval_level SET incharge_id = '$userId', incharge_approve_time =  '$approval_time' WHERE application_id = $applicationId";
     $result = $con->query($update_query);

@@ -156,7 +156,7 @@
                 }
                 
                 // Query to fetch departments from the database
-                $sql = "SELECT contract_id, contract_name FROM contracts";
+                $sql = "SELECT contract_id, contract_name FROM contracts where contract_id not in (0)";
                 $result = $con->query($sql);
 
                 // Check if there are any departments in the database
@@ -164,7 +164,7 @@
                     echo '<div class="mb-3 col-sm-6 row">';
                     echo '<label for="contract" class="col-sm-4 form-label"><b>Contract</b></label>';
                     echo '<div class="col-sm-6">';
-                    echo '<select class="form-select" id="contract" name="contract" required>';
+                    echo '<select class="form-select" id="contract" name="contract" required onchange="toggleOtherInput()">';
                     echo '<option selected>Select Contract</option>';
 
                     // Loop through each row in the result set
@@ -173,7 +173,18 @@
                         echo '<option value="' . $row["contract_id"] . '">' . $row["contract_name"] . '</option>';
                     }
 
+                    // Add the "Other" option
+                    echo '<option value="other">Other</option>';
+
                     echo '</select>';
+                    echo '</div>';
+                    echo '</div>';
+
+                    // Add the hidden input text box for "Other"
+                    echo '<div class="mb-3 col-sm-6 row" id="other-contract-div" style="display: none;">';
+                    echo '<label for="other-contract" class="col-sm-4 form-label"><b>Other Contract</b></label>';
+                    echo '<div class="col-sm-6">';
+                    echo '<input type="text" class="form-control" id="other-contract" name="other_contract" placeholder="Enter contract name">';
                     echo '</div>';
                     echo '</div>';
                 } else {
@@ -230,6 +241,16 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
+
+        function toggleOtherInput() {
+            var contractSelect = document.getElementById("contract");
+            var otherContractDiv = document.getElementById("other-contract-div");
+            if (contractSelect.value === "other") {
+                otherContractDiv.style.display = "flex"; // Show the input text box
+            } else {
+                otherContractDiv.style.display = "none"; // Hide the input text box
+            }
+        }
 
         $(document).ready(function () {
             // Initially hide police clearance fields

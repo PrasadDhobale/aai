@@ -22,12 +22,10 @@ if(isset($_POST['loginBtn'])) {
     if($manager) {
         
         $_SESSION['isManagerLogin'] = true;
-        if($manager['dept_id'] == 1000 || $manager['dept_id'] == 1001)
+        if($manager['dept_id'] == 1000 || $manager['dept_id'] == 1001 || $manager['dept_id'] == 1002)
             $_SESSION['role'] = "incharge";
-        else if($manager['dept_id'] == 1002)
-            $_SESSION['role'] = "print";
         else if($manager['dept_id'] == 1003)
-            $_SESSION['role'] = "clerk";        
+            $_SESSION['role'] = "print";
         else
             $_SESSION['role'] = "manager";
         
@@ -45,7 +43,7 @@ if(isset($_POST['loginBtn'])) {
 
 <div class="container mt-5">
     <div class="shadow p-4 m-4 pb-4 mt-5">
-        <h2><?php echo isset($_GET['dept']) ? ($_GET['dept'] == 'si' ? 'Security Incharge' : ($_GET['dept'] == 'ps' ? 'Print Section' : ($_GET['dept'] == 'c' ? 'Clerk' : 'Department Manager'))) : 'Department Manager'; ?> Login</h2>
+        <h2><?php echo isset($_GET['dept']) ? ($_GET['dept'] == 'si' ? 'Security Incharge' : ($_GET['dept'] == 'ps' ? 'Print Section' : 'Department Manager')) : 'Department Manager'; ?> Login</h2>
         <form id="manager_login" method="POST" class="form p-4" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return checkCaptcha();">
             <div class="mb-3">
                 <label for="email"><b>Email</b></label>

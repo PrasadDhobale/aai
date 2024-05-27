@@ -113,12 +113,10 @@ if ($decryptedParameters !== null) {
                 $_SESSION['manager'] = $row;
                 $_SESSION['isManagerLogin'] = true;
                 
-                if($row['dept_id'] == 1000 || $row['dept_id'] == 1001)
+                if($row['dept_id'] == 1000 || $row['dept_id'] == 1001 || $row['dept_id'] == 1002)
                     $_SESSION['role'] = "incharge";
-                else if($row['dept_id'] == 1002)
-                    $_SESSION['role'] = "print";
                 else if($row['dept_id'] == 1003)
-                    $_SESSION['role'] = "clerk";
+                    $_SESSION['role'] = "print";
                 else
                     $_SESSION['role'] = "manager";
                 
