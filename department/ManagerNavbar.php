@@ -66,9 +66,13 @@ if(!$_SESSION['isManagerLogin']){
                                 <th>Name</th>
                                 <td><?php echo $_SESSION['manager']['first_name']. " ". $_SESSION['manager']['last_name']; ?></td>
                             </tr>
-                            <tr>
-                                <th>Dept ID</th>
-                                <td><?php echo $_SESSION['manager']['dept_id']; ?></td>
+                            <tr>                                
+                                <th>Dept</th>
+                                <?php
+                                $getDeptQuery = "SELECT department_name FROM departments WHERE department_id = ".$_SESSION['manager']['dept_id'];
+                                $department = $con->query($getDeptQuery)->fetch_assoc();
+                                ?>
+                                <td><?php echo $department['department_name']; ?></td>
                             </tr>
                             <tr>
                                 <th>Phone</th>

@@ -4,11 +4,9 @@
 if($role == "contractor"){
     $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications where contract_id = $roleId";
 }else if($role == "manager"){
-    $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications where application_id IN (select application_id from approval_level where contractor_id != 0)";
-}else if($role == "clerk"){
-    $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications where application_id IN (select application_id from approval_level where manager_id != 0)";
+    $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications where application_id IN (select application_id from approval_level where contractor_id != 0) AND (contract_id = 0)";
 }else if($role == "incharge"){
-    $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications where application_id IN (select application_id from approval_level where clerk_id != 0)";
+    $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications where application_id IN (select application_id from approval_level where manager_id != 0)";
 }else if($role == "print"){
     $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications where application_id IN (select application_id from approval_level where incharge_id != 0)";
 }
@@ -34,15 +32,13 @@ $offset = ($currentPage - 1) * $rowsPerPage;
 
 // Fetch data for the current page
 if($_SESSION['role'] == "contractor"){
-    $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, department_id, areaOfVisit, apply_time FROM pass_applications WHERE contract_id = $roleId LIMIT $offset, $rowsPerPage";
+    $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, department_id, areaOfVisit, apply_time FROM pass_applications WHERE contract_id = $roleId ORDER BY apply_time DESC LIMIT $offset, $rowsPerPage";
 }else if($role == "manager"){
-    $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, department_id, areaOfVisit, apply_time FROM pass_applications WHERE department_id = ".$_SESSION['manager']['dept_id']." and application_id IN (select application_id from approval_level where contractor_id != 0) LIMIT $offset, $rowsPerPage";
-}else if($role == "clerk"){
-    $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, department_id, areaOfVisit, apply_time FROM pass_applications WHERE application_id IN (select application_id from approval_level where manager_id != 0) LIMIT $offset, $rowsPerPage";
+    $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, other_contract, department_id, areaOfVisit, apply_time FROM pass_applications WHERE department_id = ".$_SESSION['manager']['dept_id']." and application_id IN (select application_id from approval_level where contractor_id != 0) OR (contract_id = 0) ORDER BY apply_time DESC LIMIT $offset, $rowsPerPage";
 }else if($role == "incharge"){
-    $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, department_id, areaOfVisit, apply_time FROM pass_applications WHERE application_id IN (select application_id from approval_level where clerk_id != 0) LIMIT $offset, $rowsPerPage";
+    $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, other_contract, department_id, areaOfVisit, apply_time FROM pass_applications WHERE application_id IN (select application_id from approval_level where manager_id != 0) ORDER BY apply_time DESC LIMIT $offset, $rowsPerPage";
 }else if($role == "print"){
-    $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, department_id, areaOfVisit, apply_time FROM pass_applications WHERE application_id IN (select application_id from approval_level where incharge_id != 0) LIMIT $offset, $rowsPerPage";
+    $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, other_contract, department_id, areaOfVisit, apply_time FROM pass_applications WHERE application_id IN (select application_id from approval_level where incharge_id != 0) ORDER BY apply_time DESC LIMIT $offset, $rowsPerPage";
 }
 
 $result = $con->query($sql);
@@ -76,9 +72,7 @@ if ($result->num_rows > 0) {
                 while($row = $result->fetch_assoc()) {
                     echo "<tr>";
                         echo "<td class='applicant-details' style='cursor: pointer;' data-id='" . $row["application_id"] . "'>" . $row["application_id"] . "</td>";
-                        
-                       
-
+                  
                         echo "<td>" . $row["purpose_of_visit"] . "</td>";
                         echo "<td>" . $row["from_timestamp"] . "</td>";
                         echo "<td>" . $row["to_timestamp"] . "</td>";
@@ -96,7 +90,7 @@ if ($result->num_rows > 0) {
                         // Associate Contract Name with ID
                         $getContractQuery = "select contract_name from contracts where contract_id = ".$row['contract_id'];
                         $contract = mysqli_query($con, $getContractQuery)->fetch_assoc();
-                        echo "<td>" . $contract["contract_name"] . "</td>";
+                        echo "<td>" . ($contract["contract_name"] == 'other' ? $row["other_contract"] : $contract["contract_name"]) . "</td>";
 
                         // Associate Department Name with ID
                         $getDeptQuery = "select department_name from departments where department_id = ".$row['department_id'];
@@ -159,15 +153,7 @@ if ($result->num_rows > 0) {
                                     $getApprovedByUser = "select first_name from managers where manager_id = ".$isApproved;
                                     $approvedByUser = $con->query($getApprovedByUser)->fetch_assoc();
                                     $approvedByUser = $approvedByUser['first_name'];
-                                }
-                                else if($_SESSION['role'] == 'clerk'){
-                                    $isApprovedQuery = "select clerk_id from approval_level where application_id = " .$row['application_id'];
-                                    $CheckIsApproved = $con->query($isApprovedQuery)->fetch_assoc();
-                                    $isApproved = $CheckIsApproved['clerk_id'];
-                                    $getApprovedByUser = "select first_name from managers where manager_id = ".$isApproved;
-                                    $approvedByUser = $con->query($getApprovedByUser)->fetch_assoc();
-                                    $approvedByUser = $approvedByUser['first_name'];
-                                }
+                                }                                
                                 else if($_SESSION['role'] == 'incharge'){
                                     $isApprovedQuery = "select incharge_id from approval_level where application_id = " .$row['application_id'];
                                     $CheckIsApproved = $con->query($isApprovedQuery)->fetch_assoc();
