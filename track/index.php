@@ -160,7 +160,7 @@ if(isset($_GET['phone'])){
                             </table>
                         </div>
                         <div class="text-center">
-                            <button class="btn btn-danger" id="blink">Re-Apply Now</button>
+                            <a target="__blank" href="../visitor/reapply.php?phone=<?php echo $phone; ?>&&id=<?php echo $application['application_id']; ?>"><button class="btn btn-danger" id="blink">Re-Apply Now</button></a>
                         </div>
                     </div>
                     <?php
