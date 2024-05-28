@@ -274,30 +274,30 @@
 
 
         $(document).ready(function () {
-        // Fetch areas dynamically
-        $.ajax({
-            url: '../admin/controller/areaController.php?fetchAreas=true',
-            method: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                if (response.status === 'success') {
-                    response.areas.forEach(function (area) {
-                        // Create checkbox element
-                        var checkbox = $('<div class="col-sm-4 form-check"></div>')
-                            .append($('<input class="form-check-input" type="checkbox" id='+area.area_id+' name="areaOfVisit[]" value="' + area.area_id + '">'))
-                            .append($('<label class="form-check-label" for='+area.area_id+'>' + area.area_name + '</label>'));
+            // Fetch areas dynamically
+            $.ajax({
+                url: '../admin/controller/areaController.php?fetchAreas=true',
+                method: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        response.areas.forEach(function (area) {
+                            // Create checkbox element
+                            var checkbox = $('<div class="col-sm-4 form-check"></div>')
+                                .append($('<input class="form-check-input" type="checkbox" id='+area.area_id+' name="areaOfVisit[]" value="' + area.area_id + '">'))
+                                .append($('<label class="form-check-label" for='+area.area_id+'>' + area.area_name + '</label>'));
 
-                        // Append checkbox to container
-                        $('#areaContainer').append(checkbox);
-                    });
-                } else {
-                    console.error(response.message);
+                            // Append checkbox to container
+                            $('#areaContainer').append(checkbox);
+                        });
+                    } else {
+                        console.error(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(xhr.responseText);
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error(xhr.responseText);
-            }
+            });
         });
-    });
 
     </script>

@@ -13,10 +13,10 @@
         if (mail($to_email, $subject, $body, $headers)) {
             if ($role == "evs") {
                 echo "<script>alert('Please Verify Your Email From Your Email Inbox')</script>";
-            } elseif ($role == "Mevs") {
-                echo "<script>alert('Email Verification Sent to " . $name . "')</script>";
+            } elseif ($role == "reject") {
+                $response['success'] = true;
             } elseif ($role == "password") {
-                echo "<script>alert('Your Password is sent to your verified Email :)')</script>";
+                echo "<script>alert('Your Password Reset link is sent to your verified Email.')</script>";
             } elseif ($role == "contact_form") {
                 echo "<script>alert('Thanks for Contacting. " . $name . "\\n We will Contact You Soon.')</script>";
             } elseif ($role == "offer") {
@@ -65,10 +65,10 @@
         if ($mail->send()) {
             if($role == "evs"){
                 echo  "<script>alert('Please Verify Your Email From Your Email Inbox')</script>";
-            }else if($role == "Mevs"){
-                echo  "<script>alert('Email Verification Sent to ".$name."')</script>";
+            }else if($role == "reject"){
+                $response['success'] = true;
             } else if($role == "password"){
-                echo "<script>alert('Your Password is sent to your verified Email :)')</script>";
+                echo "<script>alert('Your Password Reset Link is sent to your verified Email :)')</script>";
             } else if($role == "contact_form"){
                 echo  "<script>alert('Thanks for Contacting. ".$name."\\n We will Contact You Soon.')</script>";
             } elseif ($role == "offer") {
