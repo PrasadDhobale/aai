@@ -6,11 +6,11 @@ require('../navbar.php');
 
 if(isset($_GET['phone'])){
     $phone = $_GET['phone'];
-    $checkPassStatusQuery = "select * from approval_level where application_id = (select application_id from pass_applications where phone = $phone)";
+    $checkPassStatusQuery = "select * from approval_level where application_id = (select application_id from pass_applications where visitor_id = (select id from visitor_data where phone = $phone))";
     $application = $con->query($checkPassStatusQuery)->fetch_assoc();
     if(isset($application['application_id'])){
 
-        $checkApplyTime = "select apply_time, contract_id, other_contract from pass_applications where application_id = (select application_id from pass_applications where phone = $phone)";
+        $checkApplyTime = "select apply_time, contract_id, other_contract from pass_applications where application_id = (select application_id from pass_applications where visitor_id = (select id from visitor_data where phone = $phone))";
         $pass = $con->query($checkApplyTime)->fetch_assoc();
         
         $userApplyTime = $pass['apply_time'];
@@ -21,7 +21,7 @@ if(isset($_GET['phone'])){
         $managerApproved = isset($managerApproveTime);
         $siApproved = isset($siApproveTime);
 
-        // Function to calculate time difference in hours and minutes
+        
         function timeDifference($start, $end) {
             $startTimestamp = strtotime($start);
             $endTimestamp = strtotime($end);
@@ -206,9 +206,11 @@ if(isset($_GET['phone'])){
             <script type="text/javascript"> 
             var blink = document.getElementById('blink'); 
     
-            setInterval(function () { 
-                blink.style.opacity = (blink.style.opacity == 0 ? 1 : 0); 
-            }, 1000); 
+            if(blink){
+                setInterval(function () { 
+                    blink.style.opacity = (blink.style.opacity == 0 ? 1 : 0); 
+                }, 1000); 
+            }
         </script> 
     <?php 
     }else{

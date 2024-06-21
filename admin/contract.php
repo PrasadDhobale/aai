@@ -5,49 +5,55 @@ require('AdminNavbar.php');
 ?>
 
 <div class="container shadow rounded-4 w-75 mt-5 p-4">
-    <h2>Register area</h2>
+    <!-- Create Form -->
+    <h2>Register contract</h2>
     <form id="createForm" class="form p-2">
         <div class="form-group row">
-            <label class="col-sm-3 mt-2" for="area_name">Area Name</label>
+            <label class="col-sm-3 mt-2" for="contract_name">Contract Name</label>
             <div class="col-sm-4 mt-2">
-                <input type="text" class="form-control" placeholder="Enter area name here" id="area_name" required>
+                <input type="text" class="form-control" placeholder="Enter contract name here" id="contract_name" required>
             </div>
             <div class="col-sm-3 mt-2">
             <button type="submit" class="btn btn-primary" name="create">Register</button>
             </div>
         </div>
+        
     </form>
+
     <hr>
-    
-    <h2>Areas</h2>
-    <table id="areaTable" class="table">
+
+    <!-- Read Table -->
+    <h2>Contracts</h2>
+    <table id="contractTable" class="table">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Area Name</th>
+                <th>Contract Name</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
+            <!-- Data will be populated here via AJAX -->
         </tbody>
     </table>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    // AJAX to create contract
     $("#createForm").submit(function(e) {
         e.preventDefault();
         $.ajax({
             type: "POST",
-            url: "controller/areaController.php",
+            url: "controller/contractController.php",
             data: {
                 create: true,
-                area_name: $("#area_name").val()
+                contract_name: $("#contract_name").val()
             },
             success: function(response) {
                 if (response === "success") {
                     alert("Record created successfully.");
-                    loadareas();
+                    loadcontracts();
                 } else {
                     alert("Error creating record.");
                 }
@@ -55,51 +61,51 @@ require('AdminNavbar.php');
         });
     });
 
-    // Function to load areas
-    function loadareas() {
+    // Function to load contracts
+    function loadcontracts() {
         $.ajax({
             type: "GET",
-            url: "controller/areaController.php",
+            url: "controller/contractController.php",
             data: { read: true },
             success: function(response) {
-                var areas = JSON.parse(response);
+                var contracts = JSON.parse(response);
                 var tableContent = "";
-                areas.forEach(function(area) {
+                contracts.forEach(function(contract) {
                     tableContent += "<tr>";
-                    tableContent += "<td>" + area.area_id + "</td>";
-                    tableContent += "<td>" + area.area_name + "</td>";
-                    tableContent += "<td><button class='btn btn-sm btn-warning updateBtn' data-id='" + area.area_id + "' data-name='" + area.area_name + "'>Update</button> ";
-                    tableContent += "<button class='btn btn-sm btn-danger deleteBtn' data-id='" + area.area_id + "'>Delete</button></td>";
+                    tableContent += "<td>" + contract.contract_id + "</td>";
+                    tableContent += "<td>" + contract.contract_name + "</td>";
+                    tableContent += "<td><button class='btn btn-sm btn-warning updateBtn' data-id='" + contract.contract_id + "' data-name='" + contract.contract_name + "'>Update</button> ";
+                    tableContent += "<button class='btn btn-sm btn-danger deleteBtn' data-id='" + contract.contract_id + "'>Delete</button></td>";
                     tableContent += "</tr>";
                 });
-                $("#areaTable tbody").html(tableContent);
+                $("#contractTable tbody").html(tableContent);
             }
         });
     }
 
-    // Load areas on page load
+    // Load contracts on page load
     $(document).ready(function() {
-        loadareas();
+        loadcontracts();
     });
 
-    // Update area
+    // Update contract
     $(document).on("click", ".updateBtn", function() {
-        var areaId = $(this).data("id");
-        var areaName = $(this).data("name");
-        var newareaName = prompt("Enter new area name:", areaName);
-        if (newareaName !== null) {
+        var contractId = $(this).data("id");
+        var contractName = $(this).data("name");
+        var newcontractName = prompt("Enter new contract name:", contractName);
+        if (newcontractName !== null) {
             $.ajax({
                 type: "POST",
-                url: "controller/areaController.php",
+                url: "controller/contractController.php",
                 data: {
                     update: true,
-                    area_id: areaId,
-                    area_name: newareaName
+                    contract_id: contractId,
+                    contract_name: newcontractName
                 },
                 success: function(response) {
                     if (response === "success") {
                         alert("Record updated successfully.");
-                        loadareas();
+                        loadcontracts();
                     } else {
                         alert("Error updating record.");
                     }
@@ -108,21 +114,21 @@ require('AdminNavbar.php');
         }
     });
 
-    // Delete area
+    // Delete contract
     $(document).on("click", ".deleteBtn", function() {
-        var areaId = $(this).data("id");
-        if (confirm("Are you sure you want to delete this area?")) {
+        var contractId = $(this).data("id");
+        if (confirm("Are you sure you want to delete this contract?")) {
             $.ajax({
                 type: "POST",
-                url: "controller/areaController.php",
+                url: "controller/contractController.php",
                 data: {
                     delete: true,
-                    area_id: areaId
+                    contract_id: contractId
                 },
                 success: function(response) {
                     if (response === "success") {
                         alert("Record deleted successfully.");
-                        loadareas();
+                        loadcontracts();
                     } else {
                         alert("Error deleting record.");
                     }
