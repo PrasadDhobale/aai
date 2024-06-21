@@ -1,204 +1,261 @@
 <?php
 
 require('Connection.php');
+
 // Fetch the application_id from the URL
 $application_id = $_GET['id'];
 
-$checkPassStatusQuery = "select incharge_id from approval_level where application_id = $application_id";
-$incharge = $con->query($checkPassStatusQuery)->fetch_assoc();
-if(isset($incharge['incharge_id'])){
-    if($incharge['incharge_id']){
-        // Fetch the details of the application
-        $query = "SELECT application_id, pass_type, pass_fees, name, sdw, address, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, department_id, areaOfVisit, apply_time FROM pass_applications WHERE application_id = $application_id";
-        $result = $con->query($query);
-        $row = $result->fetch_assoc();
+// Check the pass status
+$checkPassStatusQuery = "SELECT incharge_id, incharge_approve_time FROM approval_level WHERE application_id = ?";
+$stmt = $con->prepare($checkPassStatusQuery);
+$stmt->bind_param("i", $application_id);
+$stmt->execute();
+$incharge = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
-        // Fetch the contract name
-        $getContractQuery = "SELECT contract_name FROM contracts WHERE contract_id = ".$row['contract_id'];
-        $contract = $con->query($getContractQuery)->fetch_assoc();
+if (isset($incharge['incharge_id']) && $incharge['incharge_id']) {
+    // Fetch the details of the application and visitor
+    $query = "
+        SELECT 
+            pa.application_id, 
+            vd.name, 
+            vd.designation, 
+            vd.phone, 
+            vd.identity, 
+            vd.address, 
+            pa.purpose_of_visit, 
+            pa.from_timestamp, 
+            pa.to_timestamp, 
+            pa.police_clearance, 
+            pa.document_number, 
+            pa.issue_date, 
+            pa.contract_id, 
+            pa.department_id, 
+            pa.areaOfVisit, 
+            pa.apply_time 
+        FROM 
+            pass_applications pa
+        JOIN 
+            visitor_data vd ON pa.visitor_id = vd.id 
+        WHERE 
+            pa.application_id = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("i", $application_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $stmt->close();
 
-        // Fetch the department name
-        $getDeptQuery = "SELECT department_name FROM departments WHERE department_id = ".$row['department_id'];
-        $department = $con->query($getDeptQuery)->fetch_assoc();
+    // Fetch the contract name
+    $getContractQuery = "SELECT contract_name FROM contracts WHERE contract_id = ?";
+    $stmt = $con->prepare($getContractQuery);
+    $stmt->bind_param("i", $row['contract_id']);
+    $stmt->execute();
+    $contract = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
 
-        // Fetch the area names
-        $areaNames = [];
-        $areaOfVisitArray = explode(",", $row["areaOfVisit"]);
-        foreach ($areaOfVisitArray as $areaId) {
-            $getAreaQuery = "SELECT area_code FROM areas WHERE area_id = $areaId";
-            $area = $con->query($getAreaQuery)->fetch_assoc();
-            $areaCodes[] = $area["area_code"];
+    // Fetch the department name
+    $getDeptQuery = "SELECT department_name FROM departments WHERE department_id = ?";
+    $stmt = $con->prepare($getDeptQuery);
+    $stmt->bind_param("i", $row['department_id']);
+    $stmt->execute();
+    $department = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    // Fetch the area names
+    $areaCodes = [];
+    $areaOfVisitArray = explode(",", $row["areaOfVisit"]);
+    foreach ($areaOfVisitArray as $areaId) {
+        $getAreaQuery = "SELECT area_code FROM areas WHERE area_id = ?";
+        $stmt = $con->prepare($getAreaQuery);
+        $stmt->bind_param("i", $areaId);
+        $stmt->execute();
+        $area = $stmt->get_result()->fetch_assoc();
+        $areaCodes[] = $area["area_code"];
+        $stmt->close();
+    }
+
+    date_default_timezone_set("Asia/Kolkata");
+    $currentDate = date('d/M/Y');
+    $currentTime = date('H:i');
+
+    // Assuming $incharge['incharge_approve_time'] is in the format "Y-m-d H:i:s"
+    $dateTime = $incharge['incharge_approve_time'];
+
+    // Extract date in Y-m-d format
+    $issueDate = date('d/M/Y', strtotime($dateTime));
+
+    // Extract time in H:i format
+    $issueTime = date('H:i', strtotime($dateTime));
+
+    // Calculate the validity of days
+    $date1 = new DateTime($row["from_timestamp"]);
+    $date2 = new DateTime($row["to_timestamp"]);
+    $validityDays = $date2->diff($date1)->format("%a");
+
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Pass</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <style type="text/css" media="print">
+        @page {
+            size: auto;
+            margin: 0;
         }
+        .table-borderless > tbody > tr > td,
+        .table-borderless > tbody > tr > th,
+        .table-borderless > tfoot > tr > td,
+        .table-borderless > tfoot > tr > th,
+        .table-borderless > thead > tr > td,
+        .table-borderless > thead > tr > th {
+            border: none;
+        }
+        </style>
+    </head>
+    <body>
+    <div class="p-4">
+        <table class="table">
+            <tr>
+                <th class="my-auto"><td><h2>नागर विमानन सुरक्षा ब्यूरो</h2></td></th>
+                <th class="text-center">
+                    <td class="text-center"><img src="<?php echo BASE_URL; ?>assets/images/aai_logo.png" alt="Logo" width="40" height="50"/></td>
+                    <td class="lh-3 text-center">GOVERNMENT OF INDIA <br>
+                    <span class="fs-5">BUREAU OF CIVIL AVIATION SECURITY</span> <br>
+                    दैनिक परमिट / DAILY PERMIT</td>
+                </th>
+            </tr>
+        </table>
 
-        date_default_timezone_set("Asia/Kolkata");
-        $currentDate = date('Y-m-d');
-        $currentTime = date('H:i:s');
-
-        ?>
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>Pass</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-            <style type="text/css" media="print">
-            @page {
-                size: auto;   /* auto is the initial value */
-                margin: 0;  /* this affects the margin in the printer settings */
-            }
-            </style>
-        </head>
-        <body>
-        <div class="p-4">
-            <h1 class="p-4 text-center">Airport Authority Of India</h1>
-
-            <div class="row">
-                <div class="col-sm-8">
-                    <table class="table table-light table-striped-columns">
-                        <tr>
-                            <th>Pass No</th>
-                            <td><?php echo $row["application_id"]; ?></td>                    
-                        </tr>
-                        <tr>
-                            <th>Date</th>
-                            <td><?php echo $currentDate; ?></td>
-                        </tr>
-                        <tr>
-                            <th>Time</th>
-                            <td><?php echo $currentTime; ?></td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="col-sm-4">
-                    <div class="video-wrap">
-                        <video id="video" playsinline="" autoplay="" style="width: 120px; height: 140px;"></video>
-                    </div>
-                </div>
+        <div class="row">
+            <div class="col-sm-6">
+                PassNo : <?php echo $row["application_id"]; ?>
             </div>
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <th>Valid Airport</th>
-                        <td>Pune</td>
-                    </tr>
-                    <tr>
-                        <th>Pass</th>
-                        <td><?php echo $row["pass_type"]." | ".$row["pass_fees"]; ?></td>
-                    </tr>
-                    <tr>
-                        <th>Name</th>
-                        <td><?php echo $row["name"]; ?></td>
-                    </tr>
-                    <tr>
-                        <th>Address</th>
-                        <td><?php echo $row["address"]; ?></td>
-                    </tr>
-                    <tr>
-                        <th>S/D/W of</th>
-                        <td><?php echo $row["sdw"]; ?></td>
-                    </tr>
-                    <tr>
-                        <th>Purpose</th>
-                        <td><?php echo $row["purpose_of_visit"]; ?></td>
-                    </tr>
-                    <tr>
-                        <th>From</th>
-                        <td><?php echo $row["from_timestamp"]; ?></td>
-                    </tr>
-                    <tr>
-                        <th>To</th>
-                        <td><?php echo $row["to_timestamp"]; ?></td>
-                    </tr>
-                    <tr>
-                        <th>Police Clearance</th>
-                        <td><?php echo $row['police_clearance'] === "yes" ? "Document No: " . $row["document_number"] . "<br>Issue Date: " . $row["issue_date"] : "No"; ?></td>
-                    </tr>
-                    <tr>
-                        <th>Esct By</th>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <th>Contract</th>
-                        <td><?php echo $contract["contract_name"]; ?></td>
-                    </tr>
-                    <tr>
-                        <th>Department</th>
-                        <td><?php echo $department["department_name"]; ?></td>
-                    </tr>
-                    <tr>
-                        <th>Area of Visit</th>
-                        <td>
-                            <?php 
-                            foreach ($areaCodes as $areaCode) {
-                                echo $areaCode . " | ";
-                            }
-                            ?>                        
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Apply Time</th>
-                        <td><?php echo $row["apply_time"]; ?></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="col-sm-6 text-end">
+                Pass Issue Time :  <?php echo $issueDate .' '. $issueTime; ?><br>  
+                Pass Printed Time : <?php echo $currentDate; ?> <?php echo $currentTime; ?>                    
+            </div>
+        </div>
 
-            <div class="row text-center fw-bold mt-5 pt-5">
-                <div class="col">
-                    <p>Holder's Signature</p>
-                </div>
-                <div class="col">
-                    <p>Signature Of HOD</p>
-                </div>
-                <div class="col">
-                    <p>Signature Of Authority</p>
+        <div class="row">
+            <div class="col-sm-8">
+                <table class="table table-borderless lh-2">
+                    <tbody>
+                        <tr>
+                            <th>Valid Airport</th>
+                            <td>Pune</td>
+                        </tr>                            
+                        <tr>
+                            <th>Name</th>
+                            <td><?php echo $row["name"]; ?></td>
+                        </tr>
+                        <tr>
+                            <th>Designation</th>
+                            <td><?php echo $row["designation"]; ?></td>
+                        </tr>
+                        <tr>
+                            <th>Address</th>
+                            <td><?php echo $row["address"]; ?></td>
+                        </tr>
+                        <tr>
+                            <th>Validity of Days</th>
+                            <td><?php echo $validityDays <= 1 ? '1 Day' : $validityDays . ' Days'; ?></td>
+                        </tr>
+                        
+                        <tr>
+                            <th>From</th>
+                            <td><?php echo $row["from_timestamp"]; ?></td>
+                        </tr>
+                        <tr>
+                            <th>To</th>
+                            <td><?php echo $row["to_timestamp"]; ?></td>
+                        </tr>  
+                        <tr>
+                            <th>Purpose</th>
+                            <td><?php echo $row["purpose_of_visit"]; ?></td>
+                        </tr>                          
+                        <tr>
+                            <th>Area of Visit</th>
+                            <td>
+                                <?php 
+                                foreach ($areaCodes as $areaCode) {
+                                    echo $areaCode . " | ";
+                                }
+                                ?>                        
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Esct By</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>Id Proof</th>
+                            <td>
+                                <?php echo $row["identity"]; ?>
+                                <th>ContactNo</th>
+                                <td><?php echo $row["phone"]; ?></td>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-4">
+                <div class="video-wrap">
+                    <video id="video" playsinline="" autoplay="" style="width: 120px; height: 140px;"></video>
                 </div>
             </div>
         </div>
 
-            <script>
-                
-            'use strict';
+        <div class="row text-center fw-bold mt-5 pt-5">
+            <div class="col">
+                <p>Holder's Signature</p>
+            </div>
+           
+            <div class="col">
+                <p>Signature Of Authority</p>
+            </div>
+        </div>
+    </div>
 
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-            const snap = document.getElementById("snap");
-            const errorMsgElement = document.querySelector('span#errorMsg');
+    <script>            
+        const video = document.getElementById('video');
+        const errorMsgElement = document.querySelector('span#errorMsg');
 
-            const constraints = {
-                audio: false,
-                video: {
-                    width: 300 , height: 320
-                }
-            };
-
-            // Access webcam
-            async function init() {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                    handleSuccess(stream);
-                } catch (e) {
-                    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
-                }
+        const constraints = {
+            audio: false,
+            video: {
+                width: 300,
+                height: 320
             }
+        };
 
-            // Success
-            function handleSuccess(stream) {
-                window.stream = stream;
-                video.srcObject = stream;
+        // Access webcam
+        async function init() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                handleSuccess(stream);
+            } catch (e) {
+                errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
             }
+        }
 
-            // Load init
-            init();
+        // Success
+        function handleSuccess(stream) {
+            window.stream = stream;
+            video.srcObject = stream;
+        }
 
-            </script>
-        </body>
-        </html>
+        // Load init
+        init();
+
+        </script>
+    </body>
+    </html>
         <?php
     }else{
         echo "<script>alert('Not Approved Yet'); window.location.href = 'index.php'</script>";
     }
-}else{
-    echo "<script>alert('Application ID Not Found'); window.location.href = 'index.php'</script>";
-}
 $con->close();
 ?>

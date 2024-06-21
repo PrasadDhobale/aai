@@ -6,25 +6,35 @@ require('../Connection.php');
 if(isset($_POST['application_id'])) {
     $applicationId = $_POST['application_id'];
 
-    // Fetch uploaded ID and police clearance from the database
-    $sql = "SELECT upload_id, upload_clearance FROM pass_applications WHERE application_id = ?";
+    // Fetch uploaded ID from visitor_data and police clearance from pass_applications
+    $sql = "SELECT vd.upload_id, pa.upload_clearance 
+            FROM pass_applications pa
+            JOIN visitor_data vd ON pa.visitor_id = vd.id
+            WHERE pa.application_id = ?";
+    
     $stmt = $con->prepare($sql);
-    $stmt->bind_param("i", $applicationId);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    if ($stmt) {
+        $stmt->bind_param("i", $applicationId);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    if($result->num_rows > 0){
-        $row = $result->fetch_assoc();
-        // Decode the base64 encoded data
-        $uploadIdData = $row['upload_id'];
-        $uploadClearanceData = $row['upload_clearance'];
+        if($result->num_rows > 0){
+            $row = $result->fetch_assoc();
+            // Decode the base64 encoded data
+            $uploadIdData = $row['upload_id'];
+            $uploadClearanceData = $row['upload_clearance'];
 
-        echo json_encode(array('success' => true, 'uploadIdData' => $uploadIdData, 'uploadClearanceData' => $uploadClearanceData));
+            echo json_encode(array('success' => true, 'uploadIdData' => $uploadIdData, 'uploadClearanceData' => $uploadClearanceData));
+        } else {
+            echo json_encode(array('success' => false, 'message' => 'No records found.'));
+        }
+
+        $stmt->close();
     } else {
-        echo json_encode(array('success' => false));
+        echo json_encode(array('success' => false, 'message' => 'Failed to prepare SQL statement.'));
     }
-
-    $stmt->close();
+} else {
+    echo json_encode(array('success' => false, 'message' => 'Application ID not provided.'));
 }
 
 $con->close();

@@ -1,22 +1,29 @@
 <?php
 session_start();
 require '../navbar.php';
+
 if (isset($_GET['id']) && isset($_GET['phone'])) {
     $applicationId = $_GET['id'];
+    $phone = $_GET['phone'];
 
     // Fetch current application data
-    $sql = "SELECT * FROM pass_applications WHERE application_id = ?";
+    $sql = "SELECT pa.*, vd.name, vd.sdw, vd.phone, vd.designation, vd.address, vd.company_id, vd.identity 
+            FROM pass_applications pa
+            INNER JOIN visitor_data vd ON pa.visitor_id = vd.id
+            WHERE pa.application_id = ? AND vd.phone = ?";
     $stmt = $con->prepare($sql);
-    $stmt->bind_param('i', $applicationId);
+    $stmt->bind_param('is', $applicationId, $phone);
     $stmt->execute();
     $result = $stmt->get_result();
     $application = $result->fetch_assoc();
     $stmt->close();
 
+    // Fetch areas of visit
     $areasOfVisit = explode(',', $application['areaOfVisit']);
 }
 
 ?>
+
 
 <div class="container shadow border-primary rounded-5 p-3 mt-5">
     <h2 class="mb-4 text-center">Update Pass Application</h2>

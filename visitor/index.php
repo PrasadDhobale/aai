@@ -238,9 +238,54 @@
             </div>
         </form>
     </div>
+
+    <div class="modal fade" id="renewModal" tabindex="-1" aria-labelledby="renewModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="renewModalLabel">Enter Phone Number for Renewal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="renewPhone">Phone Number</label>
+                        <input type="text" class="form-control" id="renewPhone" name="renewPhone" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="savePhone">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
+
+
+
+        $(document).ready(function() {
+            $('input[type=radio][name=passType]').change(function() {
+                if (this.value == 'renew') {
+                    $('#renewModal').modal('show');
+                }
+            });
+
+            $('#savePhone').click(function() {
+                var phone = $('#renewPhone').val();
+                if (phone) {
+                    // Redirect to renew.php with the phone number as a query parameter
+                    window.location.href = 'renew.php?phone=' + phone;
+                } else {
+                    alert('Please enter a phone number');
+                }
+            });
+
+            $('#renewModal').on('hidden.bs.modal', function () {
+                location.reload();
+            });
+        });
 
         function toggleOtherInput() {
             var contractSelect = document.getElementById("contract");
