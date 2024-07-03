@@ -8,7 +8,7 @@ if(isset($_POST['application_id'])) {
     $sql = "SELECT vd.name, vd.sdw, vd.designation, vd.phone, vd.address, vd.company_id, vd.identity
             FROM pass_applications pa
             JOIN visitor_data vd ON pa.visitor_id = vd.id
-            WHERE pa.application_id = ?";
+            WHERE pa.application_id = ? limit 1";
     
     $stmt = $con->prepare($sql);
     if ($stmt) {

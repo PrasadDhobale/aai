@@ -4,6 +4,8 @@ if(!$_SESSION['isAdminLogin']){
     header("Location: login.php");
 }else{
     require("../Connection.php");
+    $role = $_SESSION['role'];
+    $userId = 0000;
     ?>
     <!doctype html>
     <html lang="en">
@@ -13,11 +15,12 @@ if(!$_SESSION['isAdminLogin']){
         <title>AAI Admin Dashboard</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://kit.fontawesome.com/33b8233684.js" crossorigin="anonymous"></script>
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
             <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="<?php echo BASE_URL; ?>/admin">Dashboard</a>
+            <a class="navbar-brand fw-bold" href="<?php echo BASE_URL; ?>admin">Dashboard</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -52,8 +55,6 @@ if(!$_SESSION['isAdminLogin']){
             </div>
             </div>
       </nav>
-
-      
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <?php
 }

@@ -21,18 +21,12 @@ if(!$_SESSION['isManagerLogin']){
     <body>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold" href="<?php echo BASE_URL; ?>/manager">Dashboard</a>
+                <a class="navbar-brand fw-bold" href="<?php echo BASE_URL; ?>department">Dashboard</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="<?php echo BASE_URL; ?>department/requests.php">Requests</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo BASE_URL; ?>department/department.php">Department</a>
-                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Profile
@@ -83,10 +77,6 @@ if(!$_SESSION['isManagerLogin']){
                                 <td><?php echo $_SESSION['manager']['email']; ?></td>
                             </tr>
                             <tr>
-                                <th>Password</th>
-                                <td><?php echo $_SESSION['manager']['password']; ?></td>
-                            </tr>
-                            <tr>
                                 <th>Reg Time</th>
                                 <td><?php echo (date("d-M-Y H:i", strtotime($_SESSION['manager']['reg_time']))) ?></td>
                             </tr>
@@ -94,7 +84,6 @@ if(!$_SESSION['isManagerLogin']){
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <a href="UpdateProfile.php"><button type="button" class="btn btn-primary">Update Profile</button></a>
                     </div>  
                 </div>          
             </div>

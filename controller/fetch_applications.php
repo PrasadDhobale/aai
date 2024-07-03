@@ -4,11 +4,36 @@
 if($role == "contractor"){
     $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications WHERE contract_id = $roleId";
 } else if($role == "manager"){
-    $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications WHERE application_id IN (SELECT application_id FROM approval_level WHERE contractor_id != 0) AND contract_id = 0";
+    $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications WHERE application_id IN (SELECT application_id FROM approval_level WHERE contractor_id != 0) AND contract_id != 0";
 } else if($role == "incharge"){
     $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications WHERE application_id IN (SELECT application_id FROM approval_level WHERE manager_id != 0)";
 } else if($role == "print"){
     $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications WHERE application_id IN (SELECT application_id FROM approval_level WHERE incharge_id != 0)";
+} else if($role == "admin"){
+    $filter = isset($_GET['approved']) ? $_GET['approved'] : false;
+    if($filter)
+        $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications WHERE application_id IN (SELECT application_id FROM approval_level WHERE manager_id != 0)";
+    else
+        $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications";
+
+    if(isset($_GET['from_date']) && isset($_GET['to_date'])){
+        $from = $_GET['from_date'];
+        $to = $_GET['to_date'];
+        $request = $_GET['request'];
+
+        $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications WHERE application_id IN (SELECT application_id FROM approval_level WHERE ";
+
+        if ($request == "approved") {
+            $totalRowsQuery .= "incharge_approve_time BETWEEN '$from' AND '$to'";
+        } else {
+            $totalRowsQuery .= "apply_time BETWEEN '$from' AND '$to'";
+        }
+
+        $totalRowsQuery .= ")";
+
+        // Note: No need to add ORDER BY or LIMIT clauses for counting rows
+
+    }
 }
 
 $totalRowsResult = $con->query($totalRowsQuery);
@@ -29,7 +54,7 @@ if (!isset($_GET['page']) || $_GET['page'] < 1 || $_GET['page'] > $totalPages) {
 
 // Calculate the offset
 $offset = ($currentPage - 1) * $rowsPerPage;
-
+$sql = '';
 // Fetch data for the current page
 if($role == "contractor"){
     $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, department_id, areaOfVisit, apply_time FROM pass_applications WHERE contract_id = $roleId ORDER BY apply_time DESC LIMIT $offset, $rowsPerPage";
@@ -39,13 +64,44 @@ if($role == "contractor"){
     $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, other_contract, department_id, areaOfVisit, apply_time FROM pass_applications WHERE application_id IN (SELECT application_id FROM approval_level WHERE manager_id != 0) ORDER BY apply_time DESC LIMIT $offset, $rowsPerPage";
 } else if($role == "print"){
     $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, other_contract, department_id, areaOfVisit, apply_time FROM pass_applications WHERE application_id IN (SELECT application_id FROM approval_level WHERE incharge_id != 0) ORDER BY apply_time DESC LIMIT $offset, $rowsPerPage";
+} else if($role == "admin"){
+    $filter = isset($_GET['approved']) ? $_GET['approved'] : false;
+    if($filter)
+        $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, other_contract, department_id, areaOfVisit, apply_time FROM pass_applications WHERE application_id IN (SELECT application_id FROM approval_level WHERE incharge_id != 0) ORDER BY apply_time DESC LIMIT $offset, $rowsPerPage";
+    else
+        $sql = "SELECT visitor_id, application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, other_contract, department_id, areaOfVisit, apply_time FROM pass_applications ORDER BY apply_time DESC LIMIT $offset, $rowsPerPage";
+
+    if(isset($_GET['from_date']) && isset($_GET['to_date'])){
+        $from = $_GET['from_date'];
+        $to = $_GET['to_date'];
+        $request = $_GET['request'];
+
+                // Build the base query
+        $sql = "SELECT application_id, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, document_number, issue_date, contract_id, other_contract, department_id, areaOfVisit, apply_time 
+        FROM pass_applications ";
+
+        
+
+        // Add additional condition for approved requests
+        if ($request == "approved") {
+            $sql .= " where application_id IN (SELECT application_id FROM approval_level WHERE incharge_id != 0) and apply_time BETWEEN '$from' AND '$to'";
+        }else{
+            $sql .= "WHERE apply_time BETWEEN '$from' AND '$to'";
+        }
+
+        // Add order and limit
+        $sql .= " ORDER BY apply_time DESC LIMIT $offset, $rowsPerPage";
+    }
+    
 }
+
 
 $result = $con->query($sql);
 
 if ($result->num_rows > 0) {
     ?>
-    <div class="table-responsive">
+    <div class="table-responsive container">
+        <p>Total Records : <?php echo $totalRows; ?></p>
         <table class="table">
             <!-- Table header -->
             <thead>
@@ -71,7 +127,7 @@ if ($result->num_rows > 0) {
                 // Output data rows
                 while($row = $result->fetch_assoc()) {
                     echo "<tr>";
-                        echo "<td class='applicant-details' style='cursor: pointer;' data-id='" . $row["application_id"] . "'>" . $row["application_id"] . "</td>";
+                        echo "<td class='applicant-details' style='cursor: pointer;' data-id='" . $row["application_id"] . "'><button class='btn btn-primary'>" . $row["application_id"] . "</button></td>";
                         echo "<td>" . $row["purpose_of_visit"] . "</td>";
                         echo "<td>" . $row["from_timestamp"] . "</td>";
                         echo "<td>" . $row["to_timestamp"] . "</td>";
@@ -122,7 +178,10 @@ if ($result->num_rows > 0) {
 
                         echo "<td>" . $row["apply_time"] . "</td>";
                         
-                        if($role == 'print'){
+                        if($role == 'admin'){
+                            echo "<td><a href='../track/?id=". $row["application_id"] . "' target='___blank'/><button class='btn btn-primary'>Track</button></a></td>";
+                        }
+                        else if($role == 'print'){
                             echo "<td><button class='btn btn-primary' onclick='openPrintPage(" . $row["application_id"] . ")'>Print</button></td>";
                         } else {
                             $isRejectedQuery = "SELECT reason, rejected_by_role, rejected_by_id, rejected_at FROM approval_level WHERE application_id = " . $row['application_id'];
@@ -184,23 +243,19 @@ if ($result->num_rows > 0) {
             window.open('../print_pass.php?id=' + applicationId, '_blank');
         }
     </script>
-    <!-- Pagination -->
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
-            <!-- Previous page button -->
             <li class="page-item <?php echo $currentPage == 1 ? 'disabled' : ''; ?>">
                 <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                     <span class="sr-only">Previous</span>
                 </a>
             </li>
-            <!-- Page numbers -->
             <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
                 <li class="page-item <?php echo $i == $currentPage ? 'active' : ''; ?>">
                     <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
                 </li>
             <?php endfor; ?>
-            <!-- Next page button -->
             <li class="page-item <?php echo $currentPage == $totalPages ? 'disabled' : ''; ?>">
                 <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>

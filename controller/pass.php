@@ -1,5 +1,5 @@
 <div class="mt-5">
-    <h2 class="text-center"><?php echo $role; ?></h2>
+    <h2 class="text-center"><?php echo ucfirst($role); ?></h2>
     <?php
     include '../controller/fetch_applications.php';
     ?>
@@ -354,9 +354,9 @@ $(document).ready(function(){
                 url: '../controller/update_rejection.php',
                 type: 'post',
                 data: { 
-                    application_id: applicationId, 
-                    reject_reason: rejectReason, 
-                    role: '<?php echo $_SESSION['role']; ?>', 
+                    application_id: applicationId,
+                    reject_reason: rejectReason,
+                    role: '<?php echo $_SESSION['role']; ?>',
                     userId: '<?php echo $userId; ?>'
                 },
                 dataType: 'json',

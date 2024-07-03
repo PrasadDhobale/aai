@@ -26,6 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($username === $correct_username && $password === $correct_password) {
         // Redirect to dashboard.php if login is successful
         $_SESSION['isAdminLogin'] = true;
+        $_SESSION['role'] = "admin";
         header("Location: index.php");
         exit;
     } else {
