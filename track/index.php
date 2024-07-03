@@ -4,13 +4,24 @@
 require('../navbar.php');
 // Fetch the application_id from the URL
 
-if(isset($_GET['phone'])){
-    $phone = $_GET['phone'];
-    $checkPassStatusQuery = "select * from approval_level where application_id = (select application_id from pass_applications where visitor_id = (select id from visitor_data where phone = $phone))";
+if(isset($_GET['phone']) || isset($_GET['id'])){
+    
+    $phone = isset($_GET['phone']) ? $_GET['phone'] : null;
+    $id = isset($_GET['id']) ? $_GET['id'] : null;
+    
+    $checkPassStatusQuery = '';
+
+    if($phone)
+        $checkPassStatusQuery = "select * from approval_level where application_id = (select application_id from pass_applications where visitor_id = (select id from visitor_data where phone = $phone) order by apply_time desc limit 1)";
+    else
+        $checkPassStatusQuery = "select * from approval_level where application_id = $id";
     $application = $con->query($checkPassStatusQuery)->fetch_assoc();
     if(isset($application['application_id'])){
-
-        $checkApplyTime = "select apply_time, contract_id, other_contract from pass_applications where application_id = (select application_id from pass_applications where visitor_id = (select id from visitor_data where phone = $phone))";
+        $checkApplyTime = '';
+        if($phone)
+            $checkApplyTime = "select apply_time, contract_id, other_contract from pass_applications where application_id = (select application_id from pass_applications where visitor_id = (select id from visitor_data where phone = $phone) order by apply_time desc limit 1) ";
+        else
+            $checkApplyTime = "select apply_time, contract_id, other_contract from pass_applications where application_id = $id";
         $pass = $con->query($checkApplyTime)->fetch_assoc();
         
         $userApplyTime = $pass['apply_time'];
@@ -214,7 +225,7 @@ if(isset($_GET['phone'])){
         </script> 
     <?php 
     }else{
-        echo "Phone Number Not Found";
+        echo "Data Not Found";
     }
 }else{
     ?>

@@ -16,7 +16,7 @@ include "Connection.php";
         <div class="container-fluid">
             <a class="navbar-brand text-primary" href="#">
             <img src="<?php echo BASE_URL; ?>assets/images/aai_logo.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
-            <b><i class="fas fa-landmark"></i> A A I</b>
+            <b><i class="fas fa-plane"></i> A A I</b>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

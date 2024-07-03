@@ -12,7 +12,7 @@ if (isset($_GET['id']) && isset($_GET['phone'])) {
             INNER JOIN visitor_data vd ON pa.visitor_id = vd.id
             WHERE pa.application_id = ? AND vd.phone = ?";
     $stmt = $con->prepare($sql);
-    $stmt->bind_param('is', $applicationId, $phone);
+    $stmt->bind_param('ii', $applicationId, $phone);
     $stmt->execute();
     $result = $stmt->get_result();
     $application = $result->fetch_assoc();

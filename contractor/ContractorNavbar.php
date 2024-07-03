@@ -22,15 +22,13 @@ if(!$_SESSION['isContractorLogin']){
     <body>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="<?php echo BASE_URL; ?>/contractor">Dashboard</a>
+            <a class="navbar-brand fw-bold" href="<?php echo BASE_URL; ?>contractor">Dashboard</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="<?php echo BASE_URL; ?>contractor/applications.php">Requests</a>
-                </li>
+                
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Profile
@@ -62,7 +60,7 @@ if(!$_SESSION['isContractorLogin']){
                         </tr>
                         <tr>
                             <th>Name</th>
-                            <td><?php echo $_SESSION['contractor']['name']; ?></td>
+                            <td><?php echo $_SESSION['contractor']['contractor_name']; ?></td>
                         </tr>
                         <tr>
                             <th>Contract ID</th>
@@ -71,10 +69,6 @@ if(!$_SESSION['isContractorLogin']){
                         <tr>
                             <th>Email ID</th>
                             <td><?php echo $_SESSION['contractor']['email']; ?></td>
-                        </tr>
-                        <tr>
-                            <th>Password</th>
-                            <td><?php echo $_SESSION['contractor']['password']; ?></td>
                         </tr>
                         <tr>
                             <th>Reg Time</th>
