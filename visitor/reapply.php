@@ -38,10 +38,6 @@ if (isset($_GET['id']) && isset($_GET['phone'])) {
                         <input class="form-check-input" type="radio" name="passType" id="passTypeNew" value="new" required <?php echo $application['pass_type'] == 'new' ? 'checked' : ''; ?>>
                         <label class="form-check-label" for="passTypeNew">New</label>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="passType" id="passTypeRenew" value="renew" required <?php echo $application['pass_type'] == 'renew' ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="passTypeRenew">Renew</label>
-                    </div>
                 </div>
             </div>
             <div class="col-sm-6 row">

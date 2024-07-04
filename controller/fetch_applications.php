@@ -4,7 +4,7 @@
 if($role == "contractor"){
     $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications WHERE contract_id = $roleId";
 } else if($role == "manager"){
-    $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications WHERE application_id IN (SELECT application_id FROM approval_level WHERE contractor_id != 0) AND contract_id != 0";
+    $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications WHERE department_id = ".$_SESSION['manager']['dept_id']." and application_id IN (SELECT application_id FROM approval_level WHERE contractor_id != 0)";
 } else if($role == "incharge"){
     $totalRowsQuery = "SELECT COUNT(*) AS total_rows FROM pass_applications WHERE application_id IN (SELECT application_id FROM approval_level WHERE manager_id != 0)";
 } else if($role == "print"){
