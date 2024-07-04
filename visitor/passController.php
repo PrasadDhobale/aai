@@ -154,6 +154,7 @@ if(isset($_POST['renewPass'])){
 
     // Insert pass application data into pass_applications table
     $applicationSql = "INSERT INTO pass_applications (visitor_id, pass_type, pass_fees, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, upload_clearance, document_number, issue_date, contract_id, other_contract, department_id, areaOfVisit, apply_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    echo $visitor_id;
     $stmt = $con->prepare($applicationSql);
     $stmt->bind_param("issssssssssisss", $visitor_id, $passType, $passFees, $purposeOfVisit, $fromTimestamp, $toTimestamp, $policeClearance, $uploadClearanceData, $documentNumber, $issueDate, $contractId, $otherContract, $departmentId, $areaOfVisit, $applyTime);
 

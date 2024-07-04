@@ -58,7 +58,7 @@
                     <label for="purposeOfVisit" class="col-sm-2 form-label"><b>Purpose of Visit</b></label>
                     <div class="col-sm-8">
                         <input type="text" class="form-control" placeholder="Enter your purpose of visit" id="purposeOfVisit" name="purposeOfVisit" required>
-                        <input type="hidden" name="visitor_id" value="<?php echo $visitor['name']; ?>" required>
+                        <input type="hidden" name="visitor_id" value="<?php echo $visitor['id']; ?>" required>
                     </div>
                 </div>
                 <div class="row">
