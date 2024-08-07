@@ -5,7 +5,7 @@ if(isset($_POST['application_id'])) {
     $applicationId = $_POST['application_id'];
 
     // Fetch visitor details from visitor_data and pass_applications
-    $sql = "SELECT vd.name, vd.sdw, vd.designation, vd.phone, vd.address, vd.company_id, vd.identity
+    $sql = "SELECT vd.name, vd.sdw, vd.designation, vd.phone, vd.adhaar_no, vd.address, vd.company_id, vd.identity
             FROM pass_applications pa
             JOIN visitor_data vd ON pa.visitor_id = vd.id
             WHERE pa.application_id = ? limit 1";
@@ -23,6 +23,7 @@ if(isset($_POST['application_id'])) {
             echo "<tr><td><strong>SDW:</strong></td><td>" . $row['sdw'] . "</td></tr>";
             echo "<tr><td><strong>Designation:</strong></td><td>" . $row['designation'] . "</td></tr>";
             echo "<tr><td><strong>Phone:</strong></td><td>" . $row['phone'] . "</td></tr>";
+            echo "<tr><td><strong>Adhaar No:</strong></td><td>" . $row['adhaar_no'] . "</td></tr>";
             echo "<tr><td><strong>Address:</strong></td><td>" . $row['address'] . "</td></tr>";
             echo "<tr><td><strong>Company ID:</strong></td><td>" . $row['company_id'] . "</td></tr>";
             echo "<tr><td><strong>Identity:</strong></td><td>" . $row['identity'] . "</td></tr>";

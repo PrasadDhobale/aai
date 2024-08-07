@@ -5,18 +5,19 @@ session_start();
 if (isset($_POST['requestPass'])) {
     // Retrieve form data
     $phone = $_POST['phone'];
+    $adhaarNo = $_POST['adhaar_no'];
 
-    // Check if phone number already exists
-    $checkPhoneSql = "SELECT COUNT(*) FROM visitor_data WHERE phone = ?";
-    $stmt = $con->prepare($checkPhoneSql);
-    $stmt->bind_param("s", $phone);
+    // Check if adhaar number already exists
+    $checkAdhaarSql = "SELECT COUNT(*) FROM visitor_data WHERE adhaar_no = ?";
+    $stmt = $con->prepare($checkAdhaarSql);
+    $stmt->bind_param("s", $adhaarNo);
     $stmt->execute();
-    $stmt->bind_result($phoneCount);
+    $stmt->bind_result($adhaarCount);
     $stmt->fetch();
     $stmt->close();
 
-    if ($phoneCount > 0) {
-        $_SESSION['message'] = "Mobile number already exists, use another mobile number.";
+    if ($adhaarCount > 0) {
+        $_SESSION['message'] = "Adhaar number already exists.";
         header('Location: index.php');
         exit();
     }
@@ -37,9 +38,9 @@ if (isset($_POST['requestPass'])) {
     $uploadIdData = "data:$file_mime_type;base64,$uploadIDbase64";
     
     // Insert visitor data into visitor_data table
-    $visitorSql = "INSERT INTO visitor_data (name, sdw, designation, phone, address, company_id, identity, upload_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $visitorSql = "INSERT INTO visitor_data (name, sdw, designation, phone, adhaar_no, address, company_id, identity, upload_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $con->prepare($visitorSql);
-    $stmt->bind_param("ssssssss", $name, $sdw, $designation, $phone, $address, $companyId, $identity, $uploadIdData);
+    $stmt->bind_param("sssssssss", $name, $sdw, $designation, $phone, $adhaarNo, $address, $companyId, $identity, $uploadIdData);
 
     if (!$stmt->execute()) {
         echo "Error: " . $stmt->error;
@@ -79,10 +80,29 @@ if (isset($_POST['requestPass'])) {
         $uploadClearanceData = "data:$file_mime_type;base64,$uploadClearancebase64";
     }
 
+    // Handle appointment letter data
+    $appointmentLetter = $_POST['appointmentLetter'];
+
+    $uploadAppointmentData = null;
+    $startDate = null;
+    $endDate = null;
+
+    if ($appointmentLetter == "yes") {
+        $startDate = $_POST['startDate'];
+        $endDate = $_POST['endDate'];
+        echo $startDate. ' '. $endDate;
+        $uploadAppointment = $_FILES['uploadAppointment']['tmp_name'];
+        $file_mime_type = mime_content_type($uploadAppointment);
+        $uploadAppointment_data = file_get_contents($uploadAppointment);
+        $uploadAppointmentbase64 = base64_encode($uploadAppointment_data);
+        $uploadAppointmentData = "data:$file_mime_type;base64,$uploadAppointmentbase64";
+    }
+
+
     // Insert pass application data into pass_applications table
-    $applicationSql = "INSERT INTO pass_applications (visitor_id, pass_type, pass_fees, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, upload_clearance, document_number, issue_date, contract_id, other_contract, department_id, areaOfVisit, apply_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $applicationSql = "INSERT INTO pass_applications (visitor_id, pass_type, pass_fees, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, upload_clearance, document_number, issue_date, appointment_letter, upload_appointment, st_date, end_date, contract_id, other_contract, department_id, areaOfVisit, apply_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $con->prepare($applicationSql);
-    $stmt->bind_param("issssssssssisss", $visitor_id, $passType, $passFees, $purposeOfVisit, $fromTimestamp, $toTimestamp, $policeClearance, $uploadClearanceData, $documentNumber, $issueDate, $contractId, $otherContract, $departmentId, $areaOfVisit, $applyTime);
+    $stmt->bind_param("isssssssssssssissss", $visitor_id, $passType, $passFees, $purposeOfVisit, $fromTimestamp, $toTimestamp, $policeClearance, $uploadClearanceData, $documentNumber, $issueDate, $appointmentLetter, $uploadAppointmentData, $startDate, $endDate, $contractId, $otherContract, $departmentId, $areaOfVisit, $applyTime);
 
     if ($stmt->execute()) {
         $application_id = $stmt->insert_id;
@@ -152,11 +172,37 @@ if(isset($_POST['renewPass'])){
         $uploadClearanceData = "data:$file_mime_type;base64,$uploadClearancebase64";
     }
 
-    // Insert pass application data into pass_applications table
-    $applicationSql = "INSERT INTO pass_applications (visitor_id, pass_type, pass_fees, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, upload_clearance, document_number, issue_date, contract_id, other_contract, department_id, areaOfVisit, apply_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    echo $visitor_id;
-    $stmt = $con->prepare($applicationSql);
-    $stmt->bind_param("issssssssssisss", $visitor_id, $passType, $passFees, $purposeOfVisit, $fromTimestamp, $toTimestamp, $policeClearance, $uploadClearanceData, $documentNumber, $issueDate, $contractId, $otherContract, $departmentId, $areaOfVisit, $applyTime);
+    // Handle appointment letter data
+    $appointmentLetter = $_POST['appointmentLetter'];
+
+    $uploadAppointmentData = null;
+    $startDate = null;
+    $endDate = null;
+
+    if ($appointmentLetter == "yes") {
+        $startDate = $_POST['startDate'];
+        $endDate = $_POST['endDate'];
+        
+        $uploadAppointment = $_FILES['uploadAppointment']['tmp_name'];
+        $file_mime_type = mime_content_type($uploadAppointment);
+        $uploadAppointment_data = file_get_contents($uploadAppointment);
+        $uploadAppointmentbase64 = base64_encode($uploadAppointment_data);
+        $uploadAppointmentData = "data:$file_mime_type;base64,$uploadAppointmentbase64";
+    }
+
+// Insert pass application data into pass_applications table
+$applicationSql = "INSERT INTO pass_applications (visitor_id, pass_type, pass_fees, purpose_of_visit, from_timestamp, to_timestamp, police_clearance, upload_clearance, document_number, issue_date, appointment_letter, upload_appointment, st_date, end_date, contract_id, other_contract, department_id, areaOfVisit, apply_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+// Prepare the SQL statement
+$stmt = $con->prepare($applicationSql);
+
+// Check if the preparation was successful
+if ($stmt === false) {
+    die('Error preparing the SQL statement: ' . $con->error);
+}
+
+// Bind parameters
+$stmt->bind_param("isssssssssssssissss", $visitor_id, $passType, $passFees, $purposeOfVisit, $fromTimestamp, $toTimestamp, $policeClearance, $uploadClearanceData, $documentNumber, $issueDate, $appointmentLetter, $uploadAppointmentData, $startDate, $endDate, $contractId, $otherContract, $departmentId, $areaOfVisit, $applyTime);
 
     if ($stmt->execute()) {
         $application_id = $stmt->insert_id;

@@ -37,6 +37,22 @@
     </div>
 </div>
 
+<!-- uploaded police clearance -->
+<div class="modal fade" id="letterModal" tabindex="-1" aria-labelledby="letterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="letterModalLabel">Uploaded Appointment Letter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img id="letterImg" src="#" alt="Letter PDF" style="max-width: 100%;">
+                <embed id="letterPDF" src="#" type="application/pdf" style="width: 100%; height: 500px;">
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- applicant details -->
 <div class="modal fade" id="applicantModal" tabindex="-1" aria-labelledby="applicantModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -205,6 +221,39 @@ $(document).ready(function(){
                         $('#clearanceModal').modal('show'); // Show the clearance modal
                     } else {
                         $('#clearanceImg, #clearancePDF').hide();
+                    }
+                } else {
+                    alert('Error fetching files');
+                }
+            },
+            error: function() {
+                alert('Error fetching files');
+            }
+        });
+    });
+
+
+     // AJAX for View Letter button click
+     $('.view-letter').click(function() {
+        var applicationId = $(this).data('id');
+        $.ajax({
+            url: '../controller/get_uploaded_files.php',
+            type: 'post',
+            data: { application_id: applicationId },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    if (response.uploadAppointmentData) {
+                        if (isPdf(response.uploadAppointmentData)) {
+                            $('#letterPDF').attr('src', response.uploadAppointmentData).show();
+                            $('#letterImg').hide();
+                        } else {
+                            $('#letterImg').attr('src', response.uploadAppointmentData).show();
+                            $('#letterPDF').hide();
+                        }
+                        $('#letterModal').modal('show'); // Show the Letter modal
+                    } else {
+                        $('#letterImg, #letterPDF').hide();
                     }
                 } else {
                     alert('Error fetching files');
