@@ -75,6 +75,14 @@
             </div>
             <div class="row">
                 <div class="mb-3 col-sm-6 row">
+                    <label for="adhaar" class="col-sm-4 form-label"><b>Adhaar Number</b></label>
+                    <div class="col-sm-6">
+                        <input type="number" class="form-control" id="adhaar" name="adhaar_no" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-sm-6 row">
                     <label for="address" class="col-sm-4 form-label"><b>Address</b></label>
                     <div class="col-sm-6">
                         <textarea placeholder="Enter your address" class="form-control" id="address" name="address" rows="2" required></textarea>
@@ -229,6 +237,42 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="mb-3 row col-sm-6">
+                    <label for="appointmentLetter" class="col-sm-4 form-label"><b>Appointment Letter</b></label><br>
+                    <div class="col-sm-6">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="appointmentLetter" id="appointmentLetterYes" value="yes" required>
+                            <label class="form-check-label" for="appointmentLetterYes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="appointmentLetter" id="appointmentLetterNo" value="no" required checked>
+                            <label class="form-check-label" for="appointmentLetterNo">No</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 col-sm-6 row" id="uploadAppointmentField">
+                    <label for="uploadAppointment" class="col-sm-4 form-label"><b>Upload Letter</b></label>
+                    <div class="col-sm-6">
+                        <input type="file" class="form-control" id="uploadAppointment" name="uploadAppointment" accept="image/*,.pdf">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-sm-6 row" id="startDateField">
+                    <label for="startDate" class="col-sm-4 form-label"><b>Start Date</b></label><br>
+                    <div class="col-sm-6">
+                        <input type="date" class="form-control" id="startDate" name="startDate">
+                    </div>
+                </div>
+                <div class="mb-3 col-sm-6 row" id="endDateField">
+                    <label for="endDate" class="col-sm-4 form-label"><b>End Date</b></label><br>
+                    <div class="col-sm-6">
+                        <input type="date" class="form-control" id="endDate" name="endDate">
+                    </div>
+                </div>
+            </div>
             <div class="mb-3 border-top pt-2">
                 <label for="areaOfVisit" class="form-label"><b>Area of Visit</b></label><br>            
                 <div id="areaContainer" class="m-1 mb-3 row"></div>
@@ -243,13 +287,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="renewModalLabel">Enter Phone Number for Renewal</h5>
+                    <h5 class="modal-title" id="renewModalLabel">Enter Adhaar Number for Renewal</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="renewPhone">Phone Number</label>
-                        <input type="text" class="form-control" id="renewPhone" name="renewPhone" required>
+                        <label for="renewAdhaar">Adhaar Number</label>
+                        <input type="number" class="form-control" id="renewAdhaar" name="renewAdhaar" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -273,10 +317,10 @@
             });
 
             $('#savePhone').click(function() {
-                var phone = $('#renewPhone').val();
+                var adhaar = $('#renewAdhaar').val();
                 if (phone) {
                     // Redirect to renew.php with the phone number as a query parameter
-                    window.location.href = 'renew.php?phone=' + phone;
+                    window.location.href = 'renew.php?adhaar=' + adhaar;
                 } else {
                     alert('Please enter a phone number');
                 }
@@ -303,6 +347,9 @@
             $("#policeClearanceFields").hide();
             $("#issueDateFields").hide();            
 
+            $("#uploadAppointmentField").hide();
+            $("#startDateField").hide();
+            $("#endDateField").hide();
             // Handle change event of police clearance radio buttons
             $("input[name='policeClearance']").change(function () {
                 if (this.value === "yes") {
@@ -313,6 +360,19 @@
                     $("#uploadClearanceField").hide();
                     $("#policeClearanceFields").hide();
                     $("#issueDateFields").hide();
+                }
+            });
+
+            // Handle change event of appointment letter radio buttons
+            $("input[name='appointmentLetter']").change(function () {
+                if (this.value === "yes") {
+                    $("#uploadAppointmentField").show();
+                    $("#startDateField").show();
+                    $("#endDateField").show();
+                } else {
+                    $("#uploadAppointmentField").hide();
+                    $("#startDateField").hide();
+                    $("#endDateField").hide();
                 }
             });
         });

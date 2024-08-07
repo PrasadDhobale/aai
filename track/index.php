@@ -4,22 +4,22 @@
 require('../navbar.php');
 // Fetch the application_id from the URL
 
-if(isset($_GET['phone']) || isset($_GET['id'])){
+if(isset($_GET['adhaar']) || isset($_GET['id'])){
     
-    $phone = isset($_GET['phone']) ? $_GET['phone'] : null;
+    $adhaar = isset($_GET['adhaar']) ? $_GET['adhaar'] : null;
     $id = isset($_GET['id']) ? $_GET['id'] : null;
     
     $checkPassStatusQuery = '';
 
-    if($phone)
-        $checkPassStatusQuery = "select * from approval_level where application_id = (select application_id from pass_applications where visitor_id = (select id from visitor_data where phone = $phone) order by apply_time desc limit 1)";
+    if($adhaar)
+        $checkPassStatusQuery = "select * from approval_level where application_id = (select application_id from pass_applications where visitor_id = (select id from visitor_data where adhaar_no = $adhaar) order by apply_time desc limit 1)";
     else
         $checkPassStatusQuery = "select * from approval_level where application_id = $id";
     $application = $con->query($checkPassStatusQuery)->fetch_assoc();
     if(isset($application['application_id'])){
         $checkApplyTime = '';
-        if($phone)
-            $checkApplyTime = "select apply_time, contract_id, other_contract from pass_applications where application_id = (select application_id from pass_applications where visitor_id = (select id from visitor_data where phone = $phone) order by apply_time desc limit 1) ";
+        if($adhaar)
+            $checkApplyTime = "select apply_time, contract_id, other_contract from pass_applications where application_id = (select application_id from pass_applications where visitor_id = (select id from visitor_data where adhaar_no = $adhaar) order by apply_time desc limit 1) ";
         else
             $checkApplyTime = "select apply_time, contract_id, other_contract from pass_applications where application_id = $id";
         $pass = $con->query($checkApplyTime)->fetch_assoc();
@@ -171,7 +171,7 @@ if(isset($_GET['phone']) || isset($_GET['id'])){
                             </table>
                         </div>
                         <div class="text-center">
-                            <a target="__blank" href="../visitor/reapply.php?phone=<?php echo $phone; ?>&&id=<?php echo $application['application_id']; ?>"><button class="btn btn-danger" id="blink">Re-Apply Now</button></a>
+                            <a target="__blank" href="../visitor/reapply.php?adhaar=<?php echo $adhaar; ?>&&id=<?php echo $application['application_id']; ?>"><button class="btn btn-danger" id="blink">Re-Apply Now</button></a>
                         </div>
                     </div>
                     <?php
@@ -233,7 +233,7 @@ if(isset($_GET['phone']) || isset($_GET['id'])){
         <form class="row row-cols-lg-auto g-3 align-items-center" action="" method="get" target="__blank">
             <div class="col-12">
                 <div class="input-group">
-                    <input type="number" class="form-control" name="phone" id="phone" placeholder="Phone Number">
+                    <input type="number" class="form-control" name="adhaar" id="adhaar" placeholder="Adhaar Number">
                 </div>
             </div>
             <div class="col-12">

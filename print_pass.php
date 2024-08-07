@@ -113,6 +113,9 @@ if (isset($incharge['incharge_id']) && $incharge['incharge_id']) {
         .table-borderless > thead > tr > th {
             border: none;
         }
+        .no-print {
+            display: none !important;
+        }
         </style>
     </head>
     <body>
@@ -202,8 +205,18 @@ if (isset($incharge['incharge_id']) && $incharge['incharge_id']) {
                 </table>
             </div>
             <div class="col-sm-4">
-                <div class="video-wrap">
-                    <video id="video" playsinline="" autoplay="" style="width: 120px; height: 140px;"></video>
+                <div class="no-print">
+                    <label for="softCopyToggle">I have a softcopy</label>
+                    <input type="checkbox" id="softCopyToggle" onchange="toggleSoftCopy()">
+                </div>
+                <div id="cameraSection">
+                    <div class="video-wrap">
+                        <video id="video" playsinline="" autoplay="" style="width: 120px; height: 140px;"></video>
+                    </div>
+                </div>
+                <div id="uploadSection" style="display:none;">
+                    <input type="file" class="no-print" id="imageUpload" accept="image/*">
+                    <img id="uploadedImage" src="#" alt="Uploaded Image Preview" style="display:none; width: 120px; height: 140px;">
                 </div>
             </div>
         </div>
@@ -222,6 +235,11 @@ if (isset($incharge['incharge_id']) && $incharge['incharge_id']) {
     <script>            
         const video = document.getElementById('video');
         const errorMsgElement = document.querySelector('span#errorMsg');
+        const cameraSection = document.getElementById('cameraSection');
+        const softCopyToggle = document.getElementById('softCopyToggle');
+        const uploadSection = document.getElementById('uploadSection');
+        const imageUpload = document.getElementById('imageUpload');
+        const uploadedImage = document.getElementById('uploadedImage');
 
         const constraints = {
             audio: false,
@@ -250,7 +268,30 @@ if (isset($incharge['incharge_id']) && $incharge['incharge_id']) {
         // Load init
         init();
 
-        </script>
+        // Handle image upload and preview
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImage.src = e.target.result;
+                    uploadedImage.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Toggle camera section visibility
+        function toggleSoftCopy() {
+            if (softCopyToggle.checked) {
+                cameraSection.style.display = 'none';
+                uploadSection.style.display = 'block';
+            } else {
+                cameraSection.style.display = 'block';
+                uploadSection.style.display = 'none';
+            }
+        }
+    </script>
     </body>
     </html>
         <?php

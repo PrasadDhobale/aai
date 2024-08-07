@@ -2,17 +2,17 @@
 session_start();
 require '../navbar.php';
 
-if (isset($_GET['id']) && isset($_GET['phone'])) {
+if (isset($_GET['id']) && isset($_GET['adhaar'])) {
     $applicationId = $_GET['id'];
-    $phone = $_GET['phone'];
+    $adhaar = $_GET['adhaar'];
 
     // Fetch current application data
-    $sql = "SELECT pa.*, vd.name, vd.sdw, vd.phone, vd.designation, vd.address, vd.company_id, vd.identity 
+    $sql = "SELECT pa.*, vd.name, vd.sdw, vd.phone, vd.adhaar_no, vd.designation, vd.address, vd.company_id, vd.identity 
             FROM pass_applications pa
             INNER JOIN visitor_data vd ON pa.visitor_id = vd.id
-            WHERE pa.application_id = ? AND vd.phone = ?";
+            WHERE pa.application_id = ? AND vd.adhaar_no = ?";
     $stmt = $con->prepare($sql);
-    $stmt->bind_param('ii', $applicationId, $phone);
+    $stmt->bind_param('ii', $applicationId, $adhaar);
     $stmt->execute();
     $result = $stmt->get_result();
     $application = $result->fetch_assoc();
@@ -79,6 +79,14 @@ if (isset($_GET['id']) && isset($_GET['phone'])) {
                 <label for="phone" class="col-sm-4 form-label"><b>Phone</b></label>
                 <div class="col-sm-6">
                     <input type="tel" class="form-control"  value="<?php echo $application['phone']; ?>" id="phone" name="phone" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="mb-3 col-sm-6 row">
+                <label for="adhaar" class="col-sm-4 form-label"><b>Adhaar Number</b></label>
+                <div class="col-sm-6">
+                    <input type="tel" class="form-control"  value="<?php echo $application['adhaar_no']; ?>" id="adhaar" name="adhaar" required>
                 </div>
             </div>
         </div>
@@ -237,6 +245,41 @@ if (isset($_GET['id']) && isset($_GET['phone'])) {
                     <input type="date" class="form-control"  value="<?php echo $application['issue_date']; ?>" id="issueDate" name="issueDate">
                 </div>
             </div>
+            <div class="row">
+                <div class="mb-3 row col-sm-6">
+                    <label for="appointmentLetter" class="col-sm-4 form-label"><b>Appointment Letter</b></label><br>
+                    <div class="col-sm-6">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="appointmentLetter" id="appointmentLetterYes" value="yes" required>
+                            <label class="form-check-label" for="appointmentLetterYes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="appointmentLetter" id="appointmentLetterNo" value="no" required checked>
+                            <label class="form-check-label" for="appointmentLetterNo">No</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 col-sm-6 row" id="uploadAppointmentField">
+                    <label for="uploadAppointment" class="col-sm-4 form-label"><b>Upload Letter</b></label>
+                    <div class="col-sm-6">
+                        <input type="file" class="form-control" id="uploadAppointment" name="uploadAppointment" accept="image/*,.pdf">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-sm-6 row" id="startDateField">
+                    <label for="startDate" class="col-sm-4 form-label"><b>Start Date</b></label><br>
+                    <div class="col-sm-6">
+                        <input type="date" class="form-control" id="startDate" name="startDate">
+                    </div>
+                </div>
+                <div class="mb-3 col-sm-6 row" id="endDateField">
+                    <label for="endDate" class="col-sm-4 form-label"><b>End Date</b></label><br>
+                    <div class="col-sm-6">
+                        <input type="date" class="form-control" id="endDate" name="endDate">
+                    </div>
+                </div>
+            </div>
             <div class="mb-3 border-top pt-2">
                 <label for="areaOfVisit" class="form-label"><b>Area of Visit</b></label><br>            
                 <div id="areaContainer" class="m-1 mb-3 row"></div>
@@ -267,6 +310,9 @@ if (isset($_GET['id']) && isset($_GET['phone'])) {
         $("#policeClearanceFields").hide();
         $("#issueDateFields").hide();            
 
+        $("#uploadAppointmentField").hide();
+        $("#startDateField").hide();
+        $("#endDateField").hide();
         // Handle change event of police clearance radio buttons
         $("input[name='policeClearance']").change(function () {
             if (this.value === "yes") {
@@ -277,6 +323,19 @@ if (isset($_GET['id']) && isset($_GET['phone'])) {
                 $("#uploadClearanceField").hide();
                 $("#policeClearanceFields").hide();
                 $("#issueDateFields").hide();
+            }
+        });
+
+         // Handle change event of appointment letter radio buttons
+         $("input[name='appointmentLetter']").change(function () {
+            if (this.value === "yes") {
+                $("#uploadAppointmentField").show();
+                $("#startDateField").show();
+                $("#endDateField").show();
+            } else {
+                $("#uploadAppointmentField").hide();
+                $("#startDateField").hide();
+                $("#endDateField").hide();
             }
         });
     });
