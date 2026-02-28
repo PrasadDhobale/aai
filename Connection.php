@@ -5,7 +5,7 @@
     require 'config.php';
     $con = '';
     if(BASE_URL == 'https://aai.compwallah.com/'){
-        $con = mysqli_connect("localhost","u605731505_admin1519","Pr@$@d@151956","u605731505_aai");
+        $con = mysqli_connect("localhost","u800744451_aai","Pr@$@d@151956","u800744451_aai");
     }else{
         $con = mysqli_connect("localhost","root","","aai");
     }
